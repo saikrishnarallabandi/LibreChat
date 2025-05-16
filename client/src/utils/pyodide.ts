@@ -15,19 +15,19 @@ declare global {
  */
 export async function setupPyodideVirtualFS(pyodide: any): Promise<void> {
   await pyodide.runPythonAsync(`
-    import os
-    import sys
-    
-    # Create virtual directories
-    os.makedirs('/home/pyodide/data', exist_ok=True)
-    
-    # Set up a working demo file
-    with open('/home/pyodide/data/example.txt', 'w') as f:
-        f.write('This is an example file in the virtual file system.\\nYou can read from this file in your code!')
-    
-    # Create a helper module for file operations that works in browser
-    with open('/home/pyodide/file_helpers.py', 'w') as f:
-        f.write('''
+import os
+import sys
+
+# Create virtual directories
+os.makedirs('/home/pyodide/data', exist_ok=True)
+
+# Set up a working demo file
+with open('/home/pyodide/data/example.txt', 'w') as f:
+    f.write('This is an example file in the virtual file system.\\nYou can read from this file in your code!')
+
+# Create a helper module for file operations that works in browser
+with open('/home/pyodide/file_helpers.py', 'w') as f:
+    f.write('''
 # Helper functions for file operations in Pyodide
 import os
 import json
@@ -89,7 +89,7 @@ try:
         import file_helpers
     except ImportError:
         pass
-    
+        
     # Execute the user's code
     result = None
     exec("""${code.replace(/"/g, '\\"').replace(/\n/g, '\\n')}""")
