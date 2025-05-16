@@ -1318,6 +1318,8 @@ export enum LocalStorageKeys {
   LAST_MCP_ = 'LAST_MCP_',
   /** Last checked toggle for Code Interpreter API per conversation ID */
   LAST_CODE_TOGGLE_ = 'LAST_CODE_TOGGLE_',
+  /** Whether to use browser-based Python execution with Pyodide instead of API */
+  BROWSER_CODE_EXECUTION = 'BROWSER_CODE_EXECUTION',
 }
 
 export enum ForkOptions {

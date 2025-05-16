@@ -1,7 +1,7 @@
 import debounce from 'lodash/debounce';
-import React, { memo, useMemo, useCallback, useEffect } from 'react';
+import React, { memo, useMemo, useCallback } from 'react';
 import { useRecoilState } from 'recoil';
-import { TerminalSquareIcon, Laptop } from 'lucide-react';
+import { TerminalSquareIcon } from 'lucide-react';
 import {
   Tools,
   AuthType,
@@ -52,8 +52,8 @@ function CodeInterpreter({ conversationId }: { conversationId?: string | null })
   );
   const authType = useMemo(() => data?.message ?? false, [data?.message]);
   const isAuthenticated = useMemo(() => data?.authenticated ?? false, [data?.authenticated]);
-// const { methods, onSubmit, isDialogOpen, setIsDialogOpen, handleRevokeApiKey } =
-// useCodeApiKeyForm({});
+  const { methods, onSubmit, isDialogOpen, setIsDialogOpen, handleRevokeApiKey } =
+    useCodeApiKeyForm({});
 
   const setValue = useCallback(
     (isChecked: boolean) => {
@@ -74,9 +74,13 @@ function CodeInterpreter({ conversationId }: { conversationId?: string | null })
 
   const handleChange = useCallback(
     (isChecked: boolean) => {
+      if (!isAuthenticated) {
+        setIsDialogOpen(true);
+        return;
+      }
       setRunCode(isChecked);
     },
-    [setRunCode],
+    [setRunCode, setIsDialogOpen, isAuthenticated],
   );
 
   const debouncedChange = useMemo(
@@ -84,28 +88,30 @@ function CodeInterpreter({ conversationId }: { conversationId?: string | null })
     [handleChange],
   );
 
-  // Always use browser-based execution (Pyodide)
-  useEffect(() => {
-    // Set browser execution to always be true
-    localStorage.setItem(LocalStorageKeys.BROWSER_CODE_EXECUTION, 'true');
-  }, []);
-
   if (!canRunCode) {
     return null;
   }
 
   return (
     <>
-      <div className="flex flex-col gap-2">
-        <CheckboxButton
-          className="max-w-fit"
-          defaultChecked={runCode}
-          setValue={debouncedChange}
-          label={localize('com_assistants_code_interpreter') + " (Browser Python)"}
-          isCheckedClassName="border-purple-600/40 bg-purple-500/10 hover:bg-purple-700/10"
-          icon={<TerminalSquareIcon className="icon-md" />}
-        />
-      </div>
+      <CheckboxButton
+        className="max-w-fit"
+        defaultChecked={runCode}
+        setValue={debouncedChange}
+        label={localize('com_assistants_code_interpreter')}
+        isCheckedClassName="border-purple-600/40 bg-purple-500/10 hover:bg-purple-700/10"
+        icon={<TerminalSquareIcon className="icon-md" />}
+      />
+      <ApiKeyDialog
+        onSubmit={onSubmit}
+        isOpen={isDialogOpen}
+        register={methods.register}
+        onRevoke={handleRevokeApiKey}
+        onOpenChange={setIsDialogOpen}
+        handleSubmit={methods.handleSubmit}
+        isToolAuthenticated={isAuthenticated}
+        isUserProvided={authType === AuthType.USER_PROVIDED}
+      />
     </>
   );
 }
