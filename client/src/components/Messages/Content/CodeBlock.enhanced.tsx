@@ -93,9 +93,25 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
     : '';
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Enhanced debugging for tool calls
   debugLog(`Rendering code block for key: ${key}`);
   debugLog(`messageId: ${messageId}, partIndex: ${partIndex}, blockIndex: ${blockIndex}`);
   debugLog(`toolCallsMap available:`, !!toolCallsMap);
+  if (toolCallsMap) {
+    // Dump all keys to help debug
+    const allKeys = Object.keys(toolCallsMap);
+    debugLog(`Available tool call keys:`, allKeys);
+    
+    // Check if our key exists in some similar form
+    const similarKeys = allKeys.filter(k => 
+      k.includes(messageId ?? '') || 
+      k.includes(String(blockIndex ?? '')) || 
+      k.includes(Tools.execute_code)
+    );
+    if (similarKeys.length > 0) {
+      debugLog(`Similar keys found:`, similarKeys);
+    }
+  }
 
   const fetchedToolCalls = toolCallsMap?.[key];
   const [toolCalls, setToolCalls] = useState(toolCallsMap?.[key] ?? null);
@@ -105,6 +121,11 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
       debugLog(`Fetched tool calls for key ${key}:`, fetchedToolCalls);
       setToolCalls(fetchedToolCalls);
       setCurrentIndex(fetchedToolCalls.length - 1);
+      
+      // Additional debug to check the actual result content
+      fetchedToolCalls.forEach((call, idx) => {
+        debugLog(`Tool call ${idx} result:`, call.result);
+      });
     } else {
       debugLog(`No tool calls found for key ${key}`);
     }
@@ -114,10 +135,17 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
   useEffect(() => {
     if (toolCalls && toolCalls.length > 0) {
       debugLog(`Current tool call:`, toolCalls[currentIndex]);
+      debugLog(`Result type:`, typeof toolCalls[currentIndex]?.result);
+      debugLog(`Result value:`, toolCalls[currentIndex]?.result);
     }
   }, [toolCalls, currentIndex]);
 
   const currentToolCall = useMemo(() => toolCalls?.[currentIndex], [toolCalls, currentIndex]);
+
+  // Debug the currentToolCall whenever it changes
+  useEffect(() => {
+    debugLog(`Current tool call changed:`, currentToolCall);
+  }, [currentToolCall]);
 
   const next = () => {
     if (!toolCalls) {
@@ -136,6 +164,14 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
 
   const isNonCode = !!(plugin === true || error === true);
   const language = isNonCode ? 'json' : lang;
+
+  // Debug right before rendering
+  if (allowExecution && toolCalls && toolCalls.length > 0) {
+    debugLog(`About to render code execution result`);
+    debugLog(`Current result:`, currentToolCall?.result);
+  } else if (allowExecution) {
+    debugLog(`No results to render: toolCalls=${!!toolCalls}, length=${toolCalls?.length ?? 0}`);
+  }
 
   return (
     <div className="w-full rounded-md bg-gray-900 text-xs text-white/80">

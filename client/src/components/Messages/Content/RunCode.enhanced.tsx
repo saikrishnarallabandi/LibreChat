@@ -13,6 +13,11 @@ import { cn, normalizeLanguage } from '~/utils';
 import { setupPyodideVirtualFS, executePythonCode } from '~/utils/pyodide';
 import { useToastContext } from '~/Providers';
 
+// Add debugging utility
+const debugLog = (message: string, ...data: any[]) => {
+  console.log(`[RunCode] ${message}`, ...data);
+};
+
 /**
  * Component to run code blocks in chat messages
  * Supports both API-based execution and browser-based execution via Pyodide
@@ -23,7 +28,7 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
   const queryClient = useQueryClient();
   const execute = useToolCallMutation(Tools.execute_code, {
     onSuccess: (response) => {
-      console.log('[RunCode] Tool call mutation succeeded:', response);
+      debugLog('Tool call mutation succeeded:', response);
       // Success is already handled by toast in the try/catch block
     },
     onError: (error) => {
@@ -97,12 +102,32 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
       const toolCallsData = queryClient.getQueryData<ToolCallResult[]>([QueryKeys.toolCalls, conversationId]);
       const toolCallMapKey = `${messageId}_${partIndex ?? 0}_${blockIndex ?? 0}_${Tools.execute_code}`;
       
-      console.log(
-        `[RunCode] Component mounted for code block ${blockIndex} in message ${messageId}`,
+      debugLog(
+        `Component mounted for code block ${blockIndex} in message ${messageId}`,
         `\nToolCall key: ${toolCallMapKey}`,
         `\nExisting tool calls in cache:`, 
         toolCallsData
       );
+      
+      // More detailed logging about cache data
+      if (toolCallsData && toolCallsData.length > 0) {
+        debugLog(`Found ${toolCallsData.length} existing tool calls in cache`);
+        
+        // Check if any of the tool calls match our current code block
+        const matchingCalls = toolCallsData.filter(call => 
+          call.messageId === messageId && 
+          call.partIndex === partIndex && 
+          call.blockIndex === blockIndex
+        );
+        
+        if (matchingCalls.length > 0) {
+          debugLog(`Found ${matchingCalls.length} matching tool calls for this code block`, matchingCalls);
+        } else {
+          debugLog(`No matching tool calls found for this code block`);
+        }
+      } else {
+        debugLog(`No tool calls found in cache for conversation ${conversationId}`);
+      }
     }
   }, [conversationId, messageId, partIndex, blockIndex, queryClient]);
 
@@ -110,7 +135,7 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
   useEffect(() => {
     // Debug to console when the code block renders
     if (normalizedLang === 'python' || normalizedLang === 'py') {
-      console.log(`Python code block detected (${normalizedLang})`);
+      debugLog(`Python code block detected (${normalizedLang})`);
     }
     
     // Make sure browser execution setting is properly set
@@ -121,7 +146,7 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
     
     // If Pyodide is already loaded, use it
     if (window.pyodide) {
-      console.log('✅ Pyodide was already loaded, using existing instance');
+      debugLog('✅ Pyodide was already loaded, using existing instance');
       setPyodideInstance(window.pyodide);
       setPyodideReady(true);
       return;
@@ -145,7 +170,7 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
         
         if (!window.loadPyodide) {
           // Load the Pyodide script if not already loaded
-          console.log('Loading Pyodide script...');
+          debugLog('Loading Pyodide script...');
           const script = document.createElement('script');
           script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js';
           script.async = true;
@@ -160,7 +185,7 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
         }
         
         // Initialize Pyodide
-        console.log('Loading Pyodide environment...');
+        debugLog('Loading Pyodide environment...');
         const pyodide = await window.loadPyodide();
         window.pyodide = pyodide;
         
@@ -169,7 +194,7 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
         
         setPyodideInstance(pyodide);
         setPyodideReady(true);
-        console.log('✅ Pyodide loaded successfully');
+        debugLog('✅ Pyodide loaded successfully');
         
         // Show success toast only if we're about to use it (Python code)
         if (normalizedLang === 'python' || normalizedLang === 'py') {
@@ -224,10 +249,10 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
       
       try {
         // Execute code using our utility function
-        console.log('[RunCode] Executing Python code in browser...');
+        debugLog('Executing Python code in browser...');
         const { output, error } = await executePythonCode(pyodideInstance, codeString);
         
-        console.log('[RunCode] Execution complete. Output:', output, 'Error:', error);
+        debugLog('Execution complete. Output:', output, 'Error:', error);
         
         // Format the execution result
         const executionResult = error ? `Error: ${error}\n${output}` : output || 'Code executed successfully (no output).';
@@ -257,12 +282,17 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
         // Generate the key used in toolCallsMap
         const toolCallMapKey = `${messageId}_${partIndex ?? 0}_${blockIndex ?? 0}_${Tools.execute_code}`;
         
-        console.log('[RunCode] Updating query cache with key:', toolCallMapKey);
+        debugLog('Updating query cache with key:', toolCallMapKey);
+        debugLog('Execution result to be saved:', executionResult);
         
         // Update the query cache directly for immediate UI feedback
         // Make sure we have a valid conversation ID
         const cacheKey = conversationId ? [QueryKeys.toolCalls, conversationId] : [QueryKeys.toolCalls, 'temp'];
-        console.log('[RunCode] Using cache key:', cacheKey);
+        debugLog('Using cache key:', cacheKey);
+        
+        // Validate that the QueryKeys.toolCalls is the correct key for the cache
+        const beforeUpdate = queryClient.getQueryData(cacheKey);
+        debugLog('Cache data before update:', beforeUpdate);
         
         queryClient.setQueryData<ToolCallResult[]>(
           cacheKey,
@@ -275,19 +305,33 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
                 item.partIndex === partIndex
             );
             
+            let newData;
             if (existingResultIndex >= 0) {
               // Update existing result
-              const newData = [...oldData];
+              debugLog('Updating existing tool call result at index:', existingResultIndex);
+              newData = [...oldData];
               newData[existingResultIndex] = toolCallResult;
-              return newData;
+            } else {
+              // Add new result
+              debugLog('Adding new tool call result');
+              newData = [...oldData, toolCallResult];
             }
             
-            // Add new result
-            return [...oldData, toolCallResult];
+            debugLog('Final cache data after update:', newData);
+            return newData;
           }
         );
         
-        console.log('[RunCode] Also saving result via toolCallMutation');
+        // Force a refetch/update of any components that depend on the tool calls data
+        debugLog('Forcing cache invalidation to update UI');
+        queryClient.invalidateQueries({
+          queryKey: cacheKey,
+          exact: true,
+          // Only update the cache/state, don't trigger a refetch
+          refetchType: 'none'
+        });
+        
+        debugLog('Also saving result via toolCallMutation');
         
         // Try to save via API but don't fail if API fails (since we've already updated the local cache)
         try {
@@ -338,12 +382,12 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
         // Generate the key used in toolCallsMap
         const toolCallMapKey = `${messageId}_${partIndex ?? 0}_${blockIndex ?? 0}_${Tools.execute_code}`;
         
-        console.log('[RunCode] Updating query cache with error key:', toolCallMapKey);
+        debugLog('Updating query cache with error key:', toolCallMapKey);
         
         // Update the query cache directly for immediate UI feedback
         // Make sure we have a valid conversation ID
         const cacheKey = conversationId ? [QueryKeys.toolCalls, conversationId] : [QueryKeys.toolCalls, 'temp'];
-        console.log('[RunCode] Using cache key for error:', cacheKey);
+        debugLog('Using cache key for error:', cacheKey);
         
         queryClient.setQueryData<ToolCallResult[]>(
           cacheKey,
@@ -358,17 +402,28 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
             
             if (existingResultIndex >= 0) {
               // Update existing result
+              debugLog('Updating existing error result at index:', existingResultIndex);
               const newData = [...oldData];
               newData[existingResultIndex] = toolCallResult;
               return newData;
             }
             
             // Add new result
+            debugLog('Adding new error result');
             return [...oldData, toolCallResult];
           }
         );
         
-        console.log('[RunCode] Also saving error via toolCallMutation');
+        // Force a refetch/update of any components that depend on the tool calls data
+        debugLog('Forcing cache invalidation for error to update UI');
+        queryClient.invalidateQueries({
+          queryKey: cacheKey,
+          exact: true,
+          // Only update the cache/state, don't trigger a refetch
+          refetchType: 'none'
+        });
+        
+        debugLog('Also saving error via toolCallMutation');
         
         // Try to save via API but don't fail if API fails (since we've already updated the local cache)
         try {

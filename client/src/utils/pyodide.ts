@@ -64,72 +64,106 @@ def write_virtual_file(path, content):
  * @param pyodide The Pyodide instance
  * @param code The Python code to execute
  */
+
 export async function executePythonCode(pyodide: any, code: string): Promise<{output: string, error?: string}> {
+  console.log('[Pyodide] Starting code execution:', code.substring(0, 100) + (code.length > 100 ? '...' : ''));
+  console.log('[Pyodide] Pyodide instance available:', !!pyodide);
+  
   try {
-    // Capture stdout
-    let stdOutput = '';
-    pyodide.setStdout({
-      write: (text: string) => {
-        stdOutput += text;
-      }
-    });
-
-    // Wrap the user's code to provide better error handling
-    const wrappedCode = `
+    // Set up the environment for code execution
+    console.log('[Pyodide] Setting up Python environment');
+    
+    // Set up stdout redirection
+    pyodide.runPython(`
 import sys
-import traceback
 import io
+import traceback
 
-# Redirect stdout
+# Set up stdout capture
 sys.stdout = io.StringIO()
 
+# Import helper module for file operations
 try:
-    # Import helper module by default
-    try:
-        import file_helpers
-    except ImportError:
-        pass
+  import file_helpers
+  print("Successfully imported file_helpers module")
+except ImportError as imp_err:
+  print(f"Warning: Could not import file_helpers: {imp_err}")
+
+print("--- Starting user code execution ---")
+`);
+
+    // Execute the user's code directly
+    console.log('[Pyodide] Executing user code');
+    pyodide.runPython(code);
+    console.log('[Pyodide] User code executed successfully');
+    
+    // Check if there's a result variable to display
+    pyodide.runPython(`
+# Check for result variable
+result = None
+if 'result' in locals() and result is not None:
+  print(f"Result: {result}")
+
+print("--- User code execution completed ---")
+`);
+    
+    // Get the captured output
+    const output = pyodide.runPython(`sys.stdout.getvalue()`);
+    console.log('[Pyodide] Code execution completed successfully');
+    console.log('[Pyodide] Output:', output);
+    console.log('[Pyodide] Output length:', output.length);
+    
+    // Create a decorated version with markers to help debugging where output gets lost
+    const decoratedOutput = `===OUTPUT_START===\n${output}\n===OUTPUT_END===`;
+    console.log('[Pyodide] Decorated output:', decoratedOutput);
+    
+    return { output };
+  } catch (error: any) {
+    console.error('[Pyodide] JavaScript exception during execution:', error);
+    console.error('[Pyodide] Stack trace:', error.stack);
+    
+    let errorMessage = error.message || 'An unknown error occurred';
+    let outputFromError = '';
+    
+    // Try to get more info from Python if possible
+    try {
+      // Check if we can still access stdout, which might have partial output
+      const partialOutput = pyodide.runPython(`sys.stdout.getvalue() if hasattr(sys, 'stdout') and hasattr(sys.stdout, 'getvalue') else ""`);
+      if (partialOutput) {
+        console.log('[Pyodide] Partial output before error:', partialOutput);
+        outputFromError = partialOutput;
+      }
+      
+      // Try to get Python-specific error information
+      const errorType = pyodide.runPython(`type(sys.last_value).__name__ if hasattr(sys, 'last_value') else "Unknown"`);
+      const errorValue = pyodide.runPython(`str(sys.last_value) if hasattr(sys, 'last_value') else "Unknown error"`);
+      
+      if (errorType !== "Unknown") {
+        console.error(`[Pyodide] Python error: ${errorType}: ${errorValue}`);
         
-    # Execute the user's code
-    result = None
-    exec("""${code.replace(/"/g, '\\"').replace(/\n/g, '\\n')}""")
-    
-    # Get any printed output
-    output = sys.stdout.getvalue()
-    
-    # Print the final result if it exists
-    if 'result' in locals() and result is not None:
-        if output and not output.endswith('\\n'):
-            output += '\\n'
-        output += f"Result: {result}"
-    
-    print(output)
-except Exception as e:
-    # Handle any errors, especially file-related ones
-    error_type = type(e).__name__
-    if error_type == "OSError" and "I/O error" in str(e):
-        print("File I/O Error: Browser security restricts direct file access.")
-        print("\\nTIP: Use the virtual file system instead:")
-        print("  - import file_helpers")
-        print("  - file_helpers.write_virtual_file('/home/pyodide/data/myfile.txt', 'content')")
-        print("  - file_helpers.read_virtual_file('/home/pyodide/data/example.txt')")
-        print("  - file_helpers.list_virtual_files()")
-    else:
-        print(f"Error: {error_type}: {str(e)}")
-        traceback.print_exc()
-`;
+        // For file I/O errors, provide helpful guidance
+        if (errorType === "OSError" && errorValue.includes("I/O error")) {
+          const helpMessage = `
+File I/O Error: Browser security restricts direct file access.
 
-    // Clean the code
-    const cleanCode = dedent(wrappedCode); // removes leading margin indentation
-
-    // Run the code
-    await pyodide.runPythonAsync(cleanCode);
+TIP: Use the virtual file system instead:
+  - import file_helpers
+  - file_helpers.write_virtual_file('/home/pyodide/data/myfile.txt', 'content')
+  - file_helpers.read_virtual_file('/home/pyodide/data/example.txt')
+  - file_helpers.list_virtual_files()`;
+          
+          errorMessage = helpMessage;
+        } else {
+          errorMessage = `${errorType}: ${errorValue}`;
+        }
+      }
+    } catch (e) {
+      console.error('[Pyodide] Failed to get additional error info:', e);
+    }
     
-    return { output: stdOutput };
-  } catch (error) {
     return { 
-      output: '', 
-      error: error.message || 'An unknown error occurred'
+      output: outputFromError, 
+      error: `Execution error: ${errorMessage}`
     };
   }
 }
