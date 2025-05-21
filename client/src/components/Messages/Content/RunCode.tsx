@@ -1,10 +1,8 @@
 import debounce from 'lodash/debounce';
-import { useQueryClient } from '@tanstack/react-query';
-import { Tools, AuthType, LocalStorageKeys, QueryKeys } from 'librechat-data-provider';
+import { Tools, AuthType, LocalStorageKeys } from 'librechat-data-provider';
 import { TerminalSquareIcon, Loader } from 'lucide-react';
 import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import type { CodeBarProps } from '~/common';
-import type { ToolCallResult } from 'librechat-data-provider';
 import { useVerifyAgentToolAuth, useToolCallMutation } from '~/data-provider';
 import ApiKeyDialog from '~/components/SidePanel/Agents/Code/ApiKeyDialog';
 import { useLocalize, useCodeApiKeyForm } from '~/hooks';
@@ -20,27 +18,9 @@ import { useToastContext } from '~/Providers';
 const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex }) => {
   const localize = useLocalize();
   const { showToast } = useToastContext();
-  const queryClient = useQueryClient();
   const execute = useToolCallMutation(Tools.execute_code, {
-    onSuccess: (response) => {
-      console.log('[RunCode] Tool call mutation succeeded:', response);
-      // Success is already handled by toast in the try/catch block
-    },
-    onError: (error) => {
-      // More detailed error logging
-      if (error && typeof error === 'object' && 'message' in error) {
-        console.error(`[RunCode] Tool call mutation failed: ${error.message}`, error);
-        
-        // Check if it's an Axios error with response data
-        if ('isAxiosError' in error && error.response?.data) {
-          console.error('[RunCode] Server response data:', error.response.data);
-        }
-      } else {
-        console.error('[RunCode] Tool call mutation failed:', error);
-      }
-      
-      // We won't show this toast since we're handling errors locally and updating UI anyway
-      // showToast({ message: localize('com_ui_run_code_error'), status: 'error' });
+    onError: () => {
+      showToast({ message: localize('com_ui_run_code_error'), status: 'error' });
     },
   });
 
@@ -91,21 +71,6 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
   
-  // Check the current toolCalls in the cache when the component mounts
-  useEffect(() => {
-    if (conversationId && messageId) {
-      const toolCallsData = queryClient.getQueryData<ToolCallResult[]>([QueryKeys.toolCalls, conversationId]);
-      const toolCallMapKey = `${messageId}_${partIndex ?? 0}_${blockIndex ?? 0}_${Tools.execute_code}`;
-      
-      console.log(
-        `[RunCode] Component mounted for code block ${blockIndex} in message ${messageId}`,
-        `\nToolCall key: ${toolCallMapKey}`,
-        `\nExisting tool calls in cache:`, 
-        toolCallsData
-      );
-    }
-  }, [conversationId, messageId, partIndex, blockIndex, queryClient]);
-
   // Check if Pyodide is already loaded when component mounts
   useEffect(() => {
     // Debug to console when the code block renders
@@ -126,7 +91,7 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
       setPyodideReady(true);
       return;
     }
-  }, [normalizedLang, conversationId, messageId, partIndex, blockIndex, queryClient]);
+  }, [normalizedLang]);
   
   // Load Pyodide for browser-based Python execution
   useEffect(() => {
@@ -224,82 +189,25 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
       
       try {
         // Execute code using our utility function
-        console.log('[RunCode] Executing Python code in browser...');
+        console.log('Executing Python code in browser...');
         const { output, error } = await executePythonCode(pyodideInstance, codeString);
         
-        console.log('[RunCode] Execution complete. Output:', output, 'Error:', error);
+        // Create output display
+        const outputDiv = document.createElement('div');
+        outputDiv.className = 'py-2 px-4 mt-2 bg-gray-200 dark:bg-gray-800 rounded text-sm font-mono whitespace-pre-wrap code-output';
+        outputDiv.textContent = output || 'Code executed successfully (no output).';
         
-        // Format the execution result
-        const executionResult = error ? `Error: ${error}\n${output}` : output || 'Code executed successfully (no output).';
-        
-        // Create tool call result object
-        const toolCallParams = {
-          partIndex,
-          messageId,
-          blockIndex,
-          conversationId: conversationId ?? '',
-          lang: normalizedLang,
-          code: codeString,
-          result: executionResult,
-        };
-        
-        // Create a tool call result for the cache
-        const toolCallResult: ToolCallResult = {
-          user: '',
-          toolId: Tools.execute_code,
-          partIndex: partIndex ?? 0,
-          messageId,
-          blockIndex: blockIndex ?? 0,
-          conversationId: conversationId ?? '',
-          result: executionResult,
-        };
-        
-        // Generate the key used in toolCallsMap
-        const toolCallMapKey = `${messageId}_${partIndex ?? 0}_${blockIndex ?? 0}_${Tools.execute_code}`;
-        
-        console.log('[RunCode] Updating query cache with key:', toolCallMapKey);
-        
-        // Update the query cache directly for immediate UI feedback
-        // Make sure we have a valid conversation ID
-        const cacheKey = conversationId ? [QueryKeys.toolCalls, conversationId] : [QueryKeys.toolCalls, 'temp'];
-        console.log('[RunCode] Using cache key:', cacheKey);
-        
-        queryClient.setQueryData<ToolCallResult[]>(
-          cacheKey,
-          (oldData = []) => {
-            // Check if we already have a result for this specific tool call
-            const existingResultIndex = oldData.findIndex(
-              item => 
-                item.messageId === messageId && 
-                item.blockIndex === blockIndex && 
-                item.partIndex === partIndex
-            );
+        // Find the parent code block and append the output
+        if (codeRef.current && codeRef.current.parentElement) {
+          const parent = codeRef.current.parentElement.parentElement;
+          if (parent) {
+            // Remove previous outputs
+            const previousOutputs = parent.querySelectorAll('.code-output');
+            previousOutputs.forEach(el => el.remove());
             
-            if (existingResultIndex >= 0) {
-              // Update existing result
-              const newData = [...oldData];
-              newData[existingResultIndex] = toolCallResult;
-              return newData;
-            }
-            
-            // Add new result
-            return [...oldData, toolCallResult];
+            // Add new output
+            parent.appendChild(outputDiv);
           }
-        );
-        
-        console.log('[RunCode] Also saving result via toolCallMutation');
-        
-        // Try to save via API but don't fail if API fails (since we've already updated the local cache)
-        try {
-          execute.mutate(toolCallParams, {
-            onError: (apiError) => {
-              // Log the error but don't surface it to the user since we've already shown success toast
-              console.error('[RunCode] API call failed but UI is still updated:', apiError);
-            }
-          });
-        } catch (apiError) {
-          console.error('[RunCode] Failed to call execute mutation:', apiError);
-          // No need to show error since we've already updated UI via query cache
         }
         
         if (error) {
@@ -310,77 +218,22 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
       } catch (error: any) {
         console.error('❌ Error executing code in browser:', error);
         
-        // Format the error message
-        const errorMessage = error.message || 'An error occurred while running the code';
+        // Display error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'py-2 px-4 mt-2 bg-red-100 dark:bg-red-900/30 rounded text-sm font-mono whitespace-pre-wrap code-output';
+        errorDiv.textContent = error.message || 'An error occurred while running the code';
         
-        // Create parameter object for the mutation
-        const errorParams = {
-          partIndex,
-          messageId,
-          blockIndex,
-          conversationId: conversationId ?? '',
-          lang: normalizedLang,
-          code: codeString,
-          result: errorMessage,
-        };
-        
-        // Create a tool call result for the cache
-        const toolCallResult: ToolCallResult = {
-          user: '',
-          toolId: Tools.execute_code,
-          partIndex: partIndex ?? 0,
-          messageId,
-          blockIndex: blockIndex ?? 0,
-          conversationId: conversationId ?? '',
-          result: errorMessage,
-        };
-        
-        // Generate the key used in toolCallsMap
-        const toolCallMapKey = `${messageId}_${partIndex ?? 0}_${blockIndex ?? 0}_${Tools.execute_code}`;
-        
-        console.log('[RunCode] Updating query cache with error key:', toolCallMapKey);
-        
-        // Update the query cache directly for immediate UI feedback
-        // Make sure we have a valid conversation ID
-        const cacheKey = conversationId ? [QueryKeys.toolCalls, conversationId] : [QueryKeys.toolCalls, 'temp'];
-        console.log('[RunCode] Using cache key for error:', cacheKey);
-        
-        queryClient.setQueryData<ToolCallResult[]>(
-          cacheKey,
-          (oldData = []) => {
-            // Check if we already have a result for this specific tool call
-            const existingResultIndex = oldData.findIndex(
-              item => 
-                item.messageId === messageId && 
-                item.blockIndex === blockIndex && 
-                item.partIndex === partIndex
-            );
+        // Find the parent code block and append the error
+        if (codeRef.current && codeRef.current.parentElement) {
+          const parent = codeRef.current.parentElement.parentElement;
+          if (parent) {
+            // Remove previous outputs
+            const previousOutputs = parent.querySelectorAll('.code-output');
+            previousOutputs.forEach(el => el.remove());
             
-            if (existingResultIndex >= 0) {
-              // Update existing result
-              const newData = [...oldData];
-              newData[existingResultIndex] = toolCallResult;
-              return newData;
-            }
-            
-            // Add new result
-            return [...oldData, toolCallResult];
+            // Add error output
+            parent.appendChild(errorDiv);
           }
-        );
-        
-        console.log('[RunCode] Also saving error via toolCallMutation');
-        
-        // Try to save via API but don't fail if API fails (since we've already updated the local cache)
-        try {
-          execute.mutate(errorParams, {
-            onError: (apiError) => {
-              // Log the error but don't surface it to the user since we've already shown error toast
-              console.error('[RunCode] Error API call failed but UI is still updated:', apiError);
-            }
-          });
-        } catch (apiError) {
-          console.error('[RunCode] Failed to call execute mutation for error:', apiError);
-          // No need to show error since we've already updated UI via query cache
         }
         
         showToast({ 
@@ -456,7 +309,7 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
     */
   }, [
     codeRef,
-    execute, 
+    execute,
     partIndex,
     messageId,
     blockIndex,
@@ -467,8 +320,7 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
     pyodideInstance,
     pyodideReady,
     useBrowserExecution,
-    showToast,
-    queryClient  // Add queryClient to the dependency array
+    showToast
   ]);
 
   const debouncedExecute = useMemo(

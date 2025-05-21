@@ -12,11 +12,6 @@ import CheckMark from '~/components/svg/CheckMark';
 import useLocalize from '~/hooks/useLocalize';
 import cn from '~/utils/cn';
 
-// Added debugging helper
-const debugLog = (message: string, ...data: any[]) => {
-  console.log(`[CodeBlock] ${message}`, ...data);
-};
-
 type CodeBlockProps = Pick<
   CodeBarProps,
   'lang' | 'plugin' | 'error' | 'allowExecution' | 'blockIndex'
@@ -93,29 +88,15 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
     : '';
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  debugLog(`Rendering code block for key: ${key}`);
-  debugLog(`messageId: ${messageId}, partIndex: ${partIndex}, blockIndex: ${blockIndex}`);
-  debugLog(`toolCallsMap available:`, !!toolCallsMap);
-
   const fetchedToolCalls = toolCallsMap?.[key];
   const [toolCalls, setToolCalls] = useState(toolCallsMap?.[key] ?? null);
 
   useEffect(() => {
     if (fetchedToolCalls) {
-      debugLog(`Fetched tool calls for key ${key}:`, fetchedToolCalls);
       setToolCalls(fetchedToolCalls);
       setCurrentIndex(fetchedToolCalls.length - 1);
-    } else {
-      debugLog(`No tool calls found for key ${key}`);
     }
-  }, [fetchedToolCalls, key]);
-
-  // Debug values in the rendered tool call
-  useEffect(() => {
-    if (toolCalls && toolCalls.length > 0) {
-      debugLog(`Current tool call:`, toolCalls[currentIndex]);
-    }
-  }, [toolCalls, currentIndex]);
+  }, [fetchedToolCalls]);
 
   const currentToolCall = useMemo(() => toolCalls?.[currentIndex], [toolCalls, currentIndex]);
 
