@@ -18,6 +18,7 @@ export * from './ThemeContext';
 export * from './ScreenshotContext';
 export * from './ApiErrorBoundaryContext';
 export * from './Endpoint';
+export * from './usePyodide';
 
 export type { TranslationKeys } from './useLocalize';
 

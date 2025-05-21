@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react';
 import { Capabilities } from 'librechat-data-provider';
-import { useFormContext, Controller } from 'react-hook-form';
+import { useFormContext, Controller, useWatch } from 'react-hook-form';
 import type { AssistantForm } from '~/common';
 import {
   Checkbox,
@@ -11,11 +12,25 @@ import {
 import { CircleHelpIcon } from '~/components/svg';
 import { useLocalize } from '~/hooks';
 import { ESide } from '~/common';
+import CodeInterpreterPane from './CodeInterpreterPane';
 
 export default function Code({ version }: { version: number | string }) {
   const localize = useLocalize();
   const methods = useFormContext<AssistantForm>();
   const { control, setValue, getValues } = methods;
+  const [showInterpreter, setShowInterpreter] = useState(false);
+  
+  // Watch the code_interpreter value to determine whether to show the interpreter
+  const codeInterpreterEnabled = useWatch({
+    control,
+    name: Capabilities.code_interpreter,
+    defaultValue: false,
+  });
+
+  // Update the interpreter visibility when the code_interpreter value changes
+  useEffect(() => {
+    setShowInterpreter(codeInterpreterEnabled);
+  }, [codeInterpreterEnabled]);
 
   return (
     <>
@@ -29,7 +44,7 @@ export default function Code({ version }: { version: number | string }) {
                 {...field}
                 checked={field.value}
                 onCheckedChange={field.onChange}
-                className="relative float-left  mr-2 inline-flex h-4 w-4 cursor-pointer"
+                className="relative float-left mr-2 inline-flex h-4 w-4 cursor-pointer"
                 value={field.value.toString()}
               />
             )}
@@ -59,11 +74,22 @@ export default function Code({ version }: { version: number | string }) {
                 <p className="text-sm text-gray-600 dark:text-gray-300">
                   {version == 2 && localize('com_assistants_code_interpreter_info')}
                 </p>
+                {showInterpreter && (
+                  <p className="text-xs text-green-600 dark:text-green-400">
+                    Browser-based Python code interpreter is enabled.
+                  </p>
+                )}
               </div>
             </HoverCardContent>
           </HoverCardPortal>
         </div>
       </HoverCard>
+      
+      {showInterpreter && (
+        <div className="mt-4 border rounded-md border-gray-200 dark:border-gray-700 overflow-hidden">
+          <CodeInterpreterPane />
+        </div>
+      )}
     </>
   );
 }
