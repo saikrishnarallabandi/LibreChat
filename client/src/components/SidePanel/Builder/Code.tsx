@@ -44,7 +44,7 @@ export default function Code({ version }: { version: number | string }) {
                 {...field}
                 checked={field.value}
                 onCheckedChange={field.onChange}
-                className="relative float-left  mr-2 inline-flex h-4 w-4 cursor-pointer"
+                className="relative float-left mr-2 inline-flex h-4 w-4 cursor-pointer"
                 value={field.value.toString()}
               />
             )}
@@ -74,6 +74,11 @@ export default function Code({ version }: { version: number | string }) {
                 <p className="text-sm text-gray-600 dark:text-gray-300">
                   {version == 2 && localize('com_assistants_code_interpreter_info')}
                 </p>
+                {showInterpreter && (
+                  <p className="text-xs text-green-600 dark:text-green-400">
+                    Browser-based Python code interpreter is enabled.
+                  </p>
+                )}
               </div>
             </HoverCardContent>
           </HoverCardPortal>
@@ -81,7 +86,7 @@ export default function Code({ version }: { version: number | string }) {
       </HoverCard>
       
       {showInterpreter && (
-        <div className="mt-4 border rounded-md border-gray-200 dark:border-gray-700">
+        <div className="mt-4 border rounded-md border-gray-200 dark:border-gray-700 overflow-hidden">
           <CodeInterpreterPane />
         </div>
       )}
