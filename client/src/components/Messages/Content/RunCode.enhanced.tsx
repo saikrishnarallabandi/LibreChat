@@ -2,14 +2,15 @@ import debounce from 'lodash/debounce';
 import { useQueryClient } from '@tanstack/react-query';
 import { Tools, AuthType, LocalStorageKeys, QueryKeys } from 'librechat-data-provider';
 import { TerminalSquareIcon, Loader } from 'lucide-react';
-import React, { useMemo, useCallback, useEffect } from 'react';
+import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import type { CodeBarProps } from '~/common';
 import type { ToolCallResult } from 'librechat-data-provider';
 import { useVerifyAgentToolAuth, useToolCallMutation } from '~/data-provider';
 import ApiKeyDialog from '~/components/SidePanel/Agents/Code/ApiKeyDialog';
-import { useLocalize, useCodeApiKeyForm, usePyodide } from '~/hooks';
+import { useLocalize, useCodeApiKeyForm } from '~/hooks';
 import { useMessageContext } from '~/Providers';
 import { cn, normalizeLanguage } from '~/utils';
+import { setupPyodideVirtualFS, executePythonCode } from '~/utils/pyodide';
 import { useToastContext } from '~/Providers';
 
 // Add debugging utility
@@ -60,16 +61,12 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
   const isAuthenticated = useMemo(() => data?.authenticated ?? false, [data?.authenticated]);
   const { methods, onSubmit, isDialogOpen, setIsDialogOpen, handleRevokeApiKey } =
     useCodeApiKeyForm({});
-    
-  // Use the shared Pyodide hook for browser-based execution
-  const { 
-    isPyodideReady: pyodideReady, 
-    isPyodideLoading, 
-    pyodideInstance, 
-    executePython 
-  } = usePyodide({
-    autoLoad: false, // We'll load on demand when needed
-  });
+  
+  // State for browser-based code execution
+  // State for browser-based Python execution
+  const [isPyodideLoading, setIsPyodideLoading] = useState(false);
+  const [pyodideReady, setPyodideReady] = useState(false);
+  const [pyodideInstance, setPyodideInstance] = useState<any>(null);
   
   // Check if browser execution is enabled in local storage
   const [useBrowserExecution, setUseBrowserExecution] = useState<boolean>(() => {
@@ -133,17 +130,102 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
       }
     }
   }, [conversationId, messageId, partIndex, blockIndex, queryClient]);
-      return;
-    }
-  }, [normalizedLang, conversationId, messageId, partIndex, blockIndex, queryClient]);
-  
-  // Ensure proper settings for browser-based execution
+
+  // Check if Pyodide is already loaded when component mounts
   useEffect(() => {
     // Debug to console when the code block renders
     if (normalizedLang === 'python' || normalizedLang === 'py') {
       debugLog(`Python code block detected (${normalizedLang})`);
     }
-  }, [normalizedLang]);
+    
+    // Make sure browser execution setting is properly set
+    const storedValue = localStorage.getItem(LocalStorageKeys.BROWSER_CODE_EXECUTION);
+    if (storedValue === null) {
+      localStorage.setItem(LocalStorageKeys.BROWSER_CODE_EXECUTION, 'true');
+    }
+    
+    // If Pyodide is already loaded, use it
+    if (window.pyodide) {
+      debugLog('✅ Pyodide was already loaded, using existing instance');
+      setPyodideInstance(window.pyodide);
+      setPyodideReady(true);
+      return;
+    }
+  }, [normalizedLang, conversationId, messageId, partIndex, blockIndex, queryClient]);
+  
+  // Load Pyodide for browser-based Python execution
+  useEffect(() => {
+    // If Pyodide is already loaded, no need to continue
+    if (window.pyodide) {
+      setPyodideInstance(window.pyodide);
+      setPyodideReady(true);
+      return;
+    }
+
+    const loadPyodide = async () => {
+      if (pyodideReady || (isPyodideLoading && !normalizedLang)) return;
+      
+      try {
+        setIsPyodideLoading(true);
+        
+        if (!window.loadPyodide) {
+          // Load the Pyodide script if not already loaded
+          debugLog('Loading Pyodide script...');
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js';
+          script.async = true;
+          
+          const loadPromise = new Promise<void>((resolve, reject) => {
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Failed to load Pyodide script'));
+          });
+          
+          document.head.appendChild(script);
+          await loadPromise;
+        }
+        
+        // Initialize Pyodide
+        debugLog('Loading Pyodide environment...');
+        const pyodide = await window.loadPyodide();
+        window.pyodide = pyodide;
+        
+        // Set up the Python environment
+        await setupPyodideVirtualFS(pyodide);
+        
+        setPyodideInstance(pyodide);
+        setPyodideReady(true);
+        debugLog('✅ Pyodide loaded successfully');
+        
+        // Show success toast only if we're about to use it (Python code)
+        if (normalizedLang === 'python' || normalizedLang === 'py') {
+          showToast({ 
+            message: 'Python environment ready for browser execution', 
+            status: 'success' 
+          });
+        }
+      } catch (error: any) {
+        console.error('❌ Error loading Pyodide:', error);
+        setUseBrowserExecution(false);
+        showToast({ 
+          message: 'Failed to load Python environment: ' + (error.message || 'Unknown error'), 
+          status: 'error' 
+        });
+      } finally {
+        setIsPyodideLoading(false);
+      }
+    };
+    
+    // Load Pyodide either when seeing Python code or proactively (with delay)
+    if (normalizedLang === 'python' || normalizedLang === 'py') {
+      loadPyodide();
+    } else if (useBrowserExecution && !pyodideReady && !isPyodideLoading) {
+      // Load Pyodide proactively with a slight delay to not impact initial page render
+      const timer = setTimeout(() => {
+        loadPyodide();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [normalizedLang, pyodideReady, isPyodideLoading, useBrowserExecution, showToast]);
 
   // Execute code either in browser (for Python) or via API
   const handleExecute = useCallback(async () => {
@@ -163,10 +245,12 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
         pyodideInstance && 
         useBrowserExecution) {
       
+      setIsPyodideLoading(true);
+      
       try {
-        // Execute code using our shared hook function
+        // Execute code using our utility function
         debugLog('Executing Python code in browser...');
-        const { output, error } = await executePython(codeString);
+        const { output, error } = await executePythonCode(pyodideInstance, codeString);
         
         debugLog('Execution complete. Output:', output, 'Error:', error);
         
@@ -358,6 +442,8 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
           message: error.message || 'Error executing Python code in browser', 
           status: 'error' 
         });
+      } finally {
+        setIsPyodideLoading(false);
       }
       return;
     }
@@ -366,12 +452,15 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
     if ((normalizedLang === 'python' || normalizedLang === 'py') && useBrowserExecution) {
       // If Pyodide is currently loading, show a loading toast
       if (!pyodideReady && !isPyodideLoading) {
-        // Try to load Pyodide on demand using our hook
-        showToast({ 
-          message: 'Loading Python environment for browser execution (this happens only once)...', 
-          status: 'loading' 
-        });
-        loadPyodide();
+        // Try to load Pyodide on demand
+        window.setTimeout(() => {
+          // This will trigger the useEffect to load Pyodide
+          setIsPyodideLoading(true);
+          showToast({ 
+            message: 'Loading Python environment for browser execution (this happens only once)...', 
+            status: 'loading' 
+          });
+        }, 0);
         return;
       }
       
