@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react';
 import { Capabilities } from 'librechat-data-provider';
-import { useFormContext, Controller } from 'react-hook-form';
+import { useFormContext, Controller, useWatch } from 'react-hook-form';
 import type { AssistantForm } from '~/common';
 import {
   Checkbox,
@@ -11,11 +12,25 @@ import {
 import { CircleHelpIcon } from '~/components/svg';
 import { useLocalize } from '~/hooks';
 import { ESide } from '~/common';
+import CodeInterpreterPane from './CodeInterpreterPane';
 
 export default function Code({ version }: { version: number | string }) {
   const localize = useLocalize();
   const methods = useFormContext<AssistantForm>();
   const { control, setValue, getValues } = methods;
+  const [showInterpreter, setShowInterpreter] = useState(false);
+  
+  // Watch the code_interpreter value to determine whether to show the interpreter
+  const codeInterpreterEnabled = useWatch({
+    control,
+    name: Capabilities.code_interpreter,
+    defaultValue: false,
+  });
+
+  // Update the interpreter visibility when the code_interpreter value changes
+  useEffect(() => {
+    setShowInterpreter(codeInterpreterEnabled);
+  }, [codeInterpreterEnabled]);
 
   return (
     <>
@@ -64,6 +79,12 @@ export default function Code({ version }: { version: number | string }) {
           </HoverCardPortal>
         </div>
       </HoverCard>
+      
+      {showInterpreter && (
+        <div className="mt-4 border rounded-md border-gray-200 dark:border-gray-700">
+          <CodeInterpreterPane />
+        </div>
+      )}
     </>
   );
 }
