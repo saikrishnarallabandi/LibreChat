@@ -1,5 +1,5 @@
 import debounce from 'lodash/debounce';
-import React, { memo, useMemo, useCallback, useEffect } from 'react';
+import React, { memo, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useRecoilState } from 'recoil';
 import { TerminalSquareIcon, Laptop } from 'lucide-react';
 import {
@@ -32,6 +32,7 @@ const storageCondition = (value: unknown, rawCurrentValue?: string | null) => {
 };
 
 function CodeInterpreter({ conversationId }: { conversationId?: string | null }) {
+  const triggerRef = useRef<HTMLInputElement>(null);
   const localize = useLocalize();
   const key = conversationId ?? Constants.NEW_CONVO;
 

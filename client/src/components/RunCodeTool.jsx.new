@@ -1,0 +1,143 @@
+import React, { useState, useEffect } from 'react';
+import { executePythonOnServer } from '../utils/pythonExecution';
+
+const RunCodeTool = () => {
+  const [code, setCode] = useState('');
+  const [output, setOutput] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // We now use server-side Python execution, so we don't need to load Pyodide
+    setOutput('Python code will be executed on the server.');
+    console.log('Using server-side Python execution instead of Pyodide');
+  }, []);
+
+  const runCode = async () => {
+    console.log('▶️ Button clicked. Code:', code);
+    
+    if (!code) {
+      setError('Please enter some code to run');
+      return;
+    }
+
+    setIsLoading(true);
+    setOutput('');
+    setError('');
+    
+    try {
+      // Execute code on the server
+      console.log('Executing Python code on server...');
+      const result = await executePythonOnServer(code);
+      
+      if (result.success) {
+        console.log('✅ Code executed on server, output:', result.output);
+        setOutput(result.output || 'Code executed successfully (no output).');
+        
+        // If there are images, display them in the output
+        if (result.images && result.images.length > 0) {
+          // Display an indicator that images were generated
+          setOutput(prev => prev + '\n\n[Images were generated and will be displayed in the chat]');
+        }
+      } else {
+        throw new Error(result.error?.message || 'Failed to execute code on server');
+      }
+    } catch (err) {
+      console.error('❌ Error executing code on server:', err);
+      setError(err.message || 'An error occurred while running the code on the server');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ padding: 20, backgroundColor: '#f9f9f9', borderRadius: '8px', maxWidth: '800px', margin: '0 auto' }}>
+      <h2 style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        Run Python Code 
+        <span style={{ fontSize: '14px', color: 'blue', fontWeight: 'normal' }}>
+          (Server Execution)
+        </span>
+      </h2>
+      
+      <div style={{ border: '1px solid #ddd', borderRadius: '4px', overflow: 'hidden' }}>
+        <textarea
+          rows={10}
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder="# Simple Hello World example
+print('Hello World!')
+
+# Try some basic math
+a = 10
+b = 5
+print(f'{a} + {b} = {a + b}')
+print(f'{a} * {b} = {a * b}')
+
+# You can also use matplotlib for visualization!
+# import matplotlib.pyplot as plt
+# import numpy as np
+# x = np.linspace(0, 10, 100)
+# plt.plot(x, np.sin(x))
+# plt.title('Sine Wave')"
+          style={{ 
+            fontFamily: 'monospace', 
+            width: '100%', 
+            padding: '10px',
+            border: 'none',
+            boxSizing: 'border-box',
+            resize: 'vertical'
+          }}
+        />
+      </div>
+      
+      <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
+        <button 
+          onClick={runCode} 
+          disabled={isLoading}
+          style={{ 
+            padding: '8px 20px', 
+            fontSize: '16px',
+            backgroundColor: isLoading ? '#cccccc' : '#4169E1', 
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: isLoading ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          {isLoading ? 'Running on server...' : '▶️ Run Code (Server)'}
+        </button>
+      </div>
+      
+      {(output || error) && (
+        <div style={{
+          marginTop: '20px',
+          border: '1px solid ' + (error ? '#ffcccc' : '#e0e0e0'),
+          borderRadius: '4px',
+          backgroundColor: error ? '#fff8f8' : '#f0f0f0',
+          padding: '10px',
+          maxHeight: '300px',
+          overflow: 'auto'
+        }}>
+          <div style={{ marginBottom: '5px', fontSize: '14px', color: error ? '#d32f2f' : '#333' }}>
+            {error ? 'Error:' : 'Output:'}
+          </div>
+          <pre style={{ 
+            whiteSpace: 'pre-wrap',
+            margin: 0,
+            fontFamily: 'monospace',
+            fontSize: '14px',
+            color: error ? '#d32f2f' : 'inherit',
+            overflow: 'auto'
+          }}>
+            {error || output}
+          </pre>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default RunCodeTool;

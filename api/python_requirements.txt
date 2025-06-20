@@ -1,0 +1,39 @@
+# Python visualization requirements for LibreChat server-side execution
+# Minimal version that relies on Alpine pre-built packages
+
+# Core dependencies (most are installed via Alpine packages)
+#setuptools>=58.0.0
+#wheel>=0.37.0
+#six>=1.16.0
+#python-dateutil>=2.8.0
+
+# Additional visualization libraries not in Alpine
+#plotly>=5.0.0,<6.0.0
+#tabulate>=0.8.0,<0.10.0
+
+# Lightweight plotting utilities
+#cycler>=0.10.0
+#kiwisolver>=1.3.0
+#pyparsing>=2.4.0
+
+# Only include if Alpine-provided packages are not sufficient
+# Use these if specific versions are needed beyond what Alpine provides
+#matplotlib #>=3.5.0,<4.0.0
+#numpy #>=1.20.0,<2.0.0
+#pandas #>=1.3.0,<2.1.0
+#scipy #>=1.7.0,<2.0.0
+# pillow>=9.0.0,<11.0.0
+# openpyxl>=3.0.0,<4.0.0
+
+# Geographical plotting (minimal)
+#folium>=0.12.0,<0.15.0  # Interactive maps
+
+# Core packages installed via Alpine:
+# py3-numpy - Numerical computing
+# py3-matplotlib - Main plotting library
+# py3-pandas - Data manipulation and analysis
+# py3-scipy - Scientific computing
+# py3-pillow - Image processing
+# py3-seaborn - Statistical data visualization
+# py3-setuptools - Package installation
+# py3-wheel - Python wheel support

@@ -10,6 +10,7 @@ import { useMessageContext } from '~/Providers';
 import { cn, normalizeLanguage } from '~/utils';
 import { setupPyodideVirtualFS, executePythonCode } from '~/utils/pyodide';
 import { useToastContext } from '~/Providers';
+import { Spinner } from '~/components';
 
 /**
  * Component to run code blocks in chat messages
