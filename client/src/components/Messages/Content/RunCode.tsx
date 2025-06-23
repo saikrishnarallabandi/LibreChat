@@ -8,24 +8,51 @@ import ApiKeyDialog from '~/components/SidePanel/Agents/Code/ApiKeyDialog';
 import { useLocalize, useCodeApiKeyForm } from '~/hooks';
 import { useMessageContext } from '~/Providers';
 import { cn, normalizeLanguage } from '~/utils';
-import { executePythonOnServer, renderPythonOutputImages } from '~/utils/pythonExecution';
 import { useToastContext } from '~/Providers';
 import { Spinner } from '~/components';
 
 /**
  * Component to run code blocks in chat messages
- * Supports both API-based execution and browser-based execution via Pyodide
+ * Uses the proper tool call system to execute code and display results
  */
 const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex }) => {
+  console.log('[RunCode] Component rendered with lang:', lang, 'blockIndex:', blockIndex);
+  
   const localize = useLocalize();
   const { showToast } = useToastContext();
+  const { messageId, conversationId, partIndex } = useMessageContext();
   const [isExecuting, setIsExecuting] = useState(false);
 
   const normalizedLang = useMemo(() => normalizeLanguage(lang), [lang]);
 
+  // Use the proper tool call mutation
+  const toolCallMutation = useToolCallMutation(Tools.execute_code, {
+    onSuccess: (response) => {
+      console.log('[RunCode] Tool call successful:', response);
+      showToast({ message: 'Code executed successfully', status: 'success' });
+      setIsExecuting(false);
+    },
+    onError: (error: unknown) => {
+      console.error('[RunCode] Tool call error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error executing code';
+      showToast({ message: errorMessage, status: 'error' });
+      setIsExecuting(false);
+    },
+  });
+
   const handleExecute = useCallback(async (_event?: React.MouseEvent) => {
-    const codeString: string = codeRef.current?.textContent ?? '';
+    console.log('[RunCode] BUTTON CLICKED - handleExecute called!');
+    
+    if (!codeRef.current) {
+      console.log('[RunCode] No code ref available');
+      return;
+    }
+    
+    const codeString: string = codeRef.current.textContent ?? '';
+    console.log('[RunCode] Extracted code:', codeString);
+    
     if (!codeString || typeof normalizedLang !== 'string' || normalizedLang.length === 0) {
+      console.log('[RunCode] Invalid code or language:', { codeString, normalizedLang });
       return;
     }
     if (normalizedLang !== 'python' && normalizedLang !== 'py') {
@@ -35,42 +62,20 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
       });
       return;
     }
+    
+    console.log('[RunCode] Setting isExecuting to true');
     setIsExecuting(true);
-    try {
-      const result = await executePythonOnServer(codeString);
-      // Display output
-      const outputDiv = document.createElement('div');
-      outputDiv.className = 'py-2 px-4 mt-2 bg-gray-200 dark:bg-gray-800 rounded text-sm font-mono whitespace-pre-wrap code-output';
-      outputDiv.textContent = result.output || 'Code executed successfully (no output).';
-      if (codeRef.current && codeRef.current.parentElement) {
-        const parent = codeRef.current.parentElement.parentElement;
-        if (parent) {
-          // Remove previous outputs
-          const previousOutputs = parent.querySelectorAll('.code-output');
-          previousOutputs.forEach(el => el.remove());
-          parent.appendChild(outputDiv);
-          // Render images if any
-          renderPythonOutputImages(result, parent);
-        }
-      }
-      showToast({ message: 'Code executed successfully on server', status: 'success' });
-    } catch (error: any) {
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'py-2 px-4 mt-2 bg-red-100 dark:bg-red-900/30 rounded text-sm font-mono whitespace-pre-wrap code-output';
-      errorDiv.textContent = error.message || 'An error occurred while running the code';
-      if (codeRef.current && codeRef.current.parentElement) {
-        const parent = codeRef.current.parentElement.parentElement;
-        if (parent) {
-          const previousOutputs = parent.querySelectorAll('.code-output');
-          previousOutputs.forEach(el => el.remove());
-          parent.appendChild(errorDiv);
-        }
-      }
-      showToast({ message: error.message || 'Error executing Python code on server', status: 'error' });
-    } finally {
-      setIsExecuting(false);
-    }
-  }, [codeRef, normalizedLang, showToast]);
+    
+    // Use the tool call mutation instead of direct API call
+    toolCallMutation.mutate({
+      lang: normalizedLang,
+      code: codeString,
+      messageId: messageId || '',
+      conversationId: conversationId || '',
+      partIndex: partIndex || 0,
+      blockIndex: blockIndex || 0,
+    });
+  }, [codeRef, normalizedLang, showToast, toolCallMutation, messageId, conversationId, partIndex, blockIndex]);
 
   const debouncedExecute = useMemo(
     () => debounce((e: React.MouseEvent) => handleExecute(e), 1000, { leading: true }),
@@ -95,19 +100,19 @@ const RunCode: React.FC<CodeBarProps> = React.memo(({ lang, codeRef, blockIndex 
           'text-blue-600 dark:text-blue-400': true,
         })}
         onClick={debouncedExecute}
-        disabled={isExecuting}
-        title={isExecuting ? 'Executing...' : 'Run Python code on server'}
+        disabled={isExecuting || toolCallMutation.isLoading}
+        title={isExecuting ? 'Executing...' : 'Run Python code'}
       >
-        {isExecuting ? (
+        {isExecuting || toolCallMutation.isLoading ? (
           <Loader className="animate-spin" size={18} />
         ) : (
           <TerminalSquareIcon size={18} />
         )}
         {localize('com_ui_run_code')}
-        {isExecuting && (
+        {(isExecuting || toolCallMutation.isLoading) && (
           <span className="text-xs text-yellow-500 ml-1">(executing...)</span>
         )}
-        <span className="text-xs text-blue-500 ml-1">(server)</span>
+        <span className="text-xs text-green-500 ml-1">(tool)</span>
       </button>
     </>
   );

@@ -1,0 +1,530 @@
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | npm notice
+LibreChat  | npm notice New major version of npm available! 10.8.2 -> 11.4.2
+LibreChat  | npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.4.2
+LibreChat  | npm notice To update run: npm install -g npm@11.4.2
+LibreChat  | npm notice
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2
+LibreChat  | 
+LibreChat  | > LibreChat@v0.7.8 backend
+LibreChat  | > cross-env NODE_ENV=production node api/server/index.js
+LibreChat  | 
+LibreChat  | /app/packages/data-schemas/dist/index.cjs:1311
+LibreChat  |     new winston.transports.DailyRotateFile({
+LibreChat  |     ^
+LibreChat  | 
+LibreChat  | TypeError: winston.transports.DailyRotateFile is not a constructor
+LibreChat  |     at Object.<anonymous> (/app/packages/data-schemas/dist/index.cjs:1311:5)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  |     at Module.load (node:internal/modules/cjs/loader:1275:32)
+LibreChat  |     at Module._load (node:internal/modules/cjs/loader:1096:12)
+LibreChat  |     at Module.require (node:internal/modules/cjs/loader:1298:19)
+LibreChat  |     at require (node:internal/modules/helpers:182:18)
+LibreChat  |     at Object.<anonymous> (/app/packages/api/dist/index.js:1:20)
+LibreChat  |     at Module._compile (node:internal/modules/cjs/loader:1529:14)
+LibreChat  |     at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+LibreChat  | 
+LibreChat  | Node.js v20.19.2

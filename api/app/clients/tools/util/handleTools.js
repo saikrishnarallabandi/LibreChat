@@ -2,13 +2,14 @@ const { mcpToolPattern } = require('@librechat/api');
 const { logger } = require('@librechat/data-schemas');
 const { SerpAPI } = require('@langchain/community/tools/serpapi');
 const { Calculator } = require('@langchain/community/tools/calculator');
-const { EnvVar, createCodeExecutionTool, createSearchTool } = require('@librechat/agents');
+const { EnvVar, createSearchTool } = require('@librechat/agents');
 const {
   Tools,
   EToolResources,
   loadWebSearchAuth,
   replaceSpecialVars,
 } = require('librechat-data-provider');
+const { createCustomCodeExecutionTool } = require('~/server/services/Tools/customCodeExecution');
 const {
   availableTools,
   manifestToolMap,
@@ -44,6 +45,12 @@ const { createMCPTool } = require('~/server/services/MCP');
 const validateTools = async (user, tools = []) => {
   try {
     const validToolsSet = new Set(tools);
+    
+    // Always include execute_code since our custom implementation doesn't require auth
+    if (tools.includes(Tools.execute_code)) {
+      validToolsSet.add(Tools.execute_code);
+    }
+    
     const availableToolsToValidate = availableTools.filter((tool) =>
       validToolsSet.has(tool.pluginKey),
     );
@@ -56,6 +63,11 @@ const validateTools = async (user, tools = []) => {
      * @param {string} toolName The identifier of the tool being validated.
      */
     const validateCredentials = async (authField, toolName) => {
+      // Skip validation for execute_code since our custom implementation doesn't require auth
+      if (toolName === Tools.execute_code) {
+        return;
+      }
+      
       const fields = authField.split('||');
       for (const field of fields) {
         const adminAuth = process.env[field];
@@ -240,19 +252,18 @@ const loadTools = async ({
   for (const tool of tools) {
     if (tool === Tools.execute_code) {
       requestedTools[tool] = async () => {
-        const authValues = await loadAuthValues({
-          userId: user,
-          authFields: [EnvVar.CODE_API_KEY],
-        });
-        const codeApiKey = authValues[EnvVar.CODE_API_KEY];
+        // Our custom code execution tool doesn't require API key authentication
+        // Just use a dummy key for compatibility
+        const codeApiKey = 'custom-local-execution';
         const { files, toolContext } = await primeCodeFiles(options, codeApiKey);
         if (toolContext) {
           toolContextMap[tool] = toolContext;
         }
-        const CodeExecutionTool = createCodeExecutionTool({
+        // Use our custom code execution tool instead of the default one
+        const CodeExecutionTool = createCustomCodeExecutionTool({
           user_id: user,
           files,
-          ...authValues,
+          apiKey: codeApiKey,
         });
         CodeExecutionTool.apiKey = codeApiKey;
         return CodeExecutionTool;

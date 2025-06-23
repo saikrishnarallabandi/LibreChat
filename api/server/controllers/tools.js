@@ -18,7 +18,7 @@ const { getMessage } = require('~/models/Message');
 const { logger } = require('~/config');
 
 const fieldsMap = {
-  [Tools.execute_code]: [EnvVar.CODE_API_KEY],
+  // Removed execute_code - our custom implementation doesn't require API key authentication
 };
 
 const toolAccessPermType = {
@@ -66,6 +66,13 @@ const verifyToolAuth = async (req, res) => {
     if (toolId === Tools.web_search) {
       return await verifyWebSearchAuth(req, res);
     }
+    // Our custom execute_code implementation doesn't require API key authentication
+    if (toolId === Tools.execute_code) {
+      return res.status(200).json({
+        authenticated: true,
+        message: AuthType.SYSTEM_DEFINED,
+      });
+    }
     const authFields = fieldsMap[toolId];
     if (!authFields) {
       res.status(404).json({ message: 'Tool not found' });
@@ -110,7 +117,8 @@ const verifyToolAuth = async (req, res) => {
 const callTool = async (req, res) => {
   try {
     const { toolId = '' } = req.params;
-    if (!fieldsMap[toolId]) {
+    // Allow execute_code tool since our custom implementation doesn't require API key authentication
+    if (!fieldsMap[toolId] && toolId !== Tools.execute_code) {
       logger.warn(`[${toolId}/call] User ${req.user.id} attempted call to invalid tool`);
       res.status(404).json({ message: 'Tool not found' });
       return;

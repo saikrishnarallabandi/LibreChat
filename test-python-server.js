@@ -1,28 +1,38 @@
 const express = require('express');
-const router = express.Router();
 const { spawn } = require('child_process');
 const fs = require('fs').promises;
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
+const app = express();
+app.use(express.json());
+
+// Add CORS support for testing
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
 // Create temporary directory for files if it doesn't exist
-const TEMP_DIR = path.join(__dirname, '../../python_temp');
+const TEMP_DIR = path.join(__dirname, 'python_temp');
 fs.mkdir(TEMP_DIR, { recursive: true }).catch(console.error);
 
-/**
- * Test route to verify Python router is working
- * @route GET /api/python/test
- */
-router.get('/test', (req, res) => {
-  console.log('[PYTHON DEBUG] Test route called!');
-  res.json({ message: 'Python router is working!', timestamp: new Date().toISOString() });
-});
+// Simple logger mock
+const logger = {
+  error: (msg) => console.error('[ERROR]', msg)
+};
 
 /**
  * Execute Python code with visualization support
  * @route POST /api/python/execute
  */
-router.post('/execute', async (req, res) => {
+app.post('/api/python/execute', async (req, res) => {
   console.log(`[PYTHON DEBUG] Route /execute called!`);
   console.log(`[PYTHON DEBUG] Request body:`, req.body);
   
@@ -52,10 +62,6 @@ import os
 import traceback
 import base64
 import json
-import matplotlib
-matplotlib.use('Agg')  # Use the Agg backend for file output
-import matplotlib.pyplot as plt
-import numpy as np
 
 # Set the output directory for files
 output_dir = "${outputDir.replace(/\\/g, '/')}"
@@ -65,46 +71,22 @@ os.makedirs(output_dir, exist_ok=True)
 original_stdout = sys.stdout
 sys.stdout = captured_stdout = io.StringIO()
 
-figures = []
-original_figure = plt.figure
-
-def patched_figure(*args, **kwargs):
-    fig = original_figure(*args, **kwargs)
-    figures.append(fig)
-    return fig
-plt.figure = patched_figure
-
 try:
     # Execute the user's code
-    exec("""${code.replace(/"""/g, '\"\"\"')}""")
-    # Save any figures that were created but not explicitly saved
-    for i, fig in enumerate(figures):
-        try:
-            fig_path = os.path.join(output_dir, "figure_" + str(i) + ".png")
-            fig.savefig(fig_path)
-        except Exception as e:
-            print("Error saving figure " + str(i) + ": " + str(e))
+    exec("""${code.replace(/"""/g, '\\"\\"\\"')}""")
+    
     # Get the captured stdout
     output = captured_stdout.getvalue()
-    # List any images created in the output directory
-    image_files = []
-    for file in os.listdir(output_dir):
-        if file.endswith(('.png', '.jpg', '.jpeg', '.svg')):
-            file_path = os.path.join(output_dir, file)
-            with open(file_path, 'rb') as img_file:
-                img_data = base64.b64encode(img_file.read()).decode('utf-8')
-                image_files.append({
-                    'filename': file,
-                    'data': img_data
-                })
+    
+    # Restore stdout before printing result
+    sys.stdout = original_stdout
+    
     # Return the results as JSON
     result = {
         'success': True,
         'output': output,
-        'images': image_files
+        'images': []
     }
-    # Restore stdout before printing result
-    sys.stdout = original_stdout
     print(json.dumps(result))
 except Exception as e:
     error_type = type(e).__name__
@@ -126,22 +108,28 @@ except Exception as e:
     // Write the code to a temporary file
     await fs.writeFile(tempFilePath, wrappedCode);
     console.log(`[PYTHON DEBUG] Wrote code to: ${tempFilePath}`);
+    
     // Execute the Python code
     const python = spawn('python3', [tempFilePath]);
     let stdoutData = '';
     let stderrData = '';
+    
     python.stdout.on('data', (data) => {
       console.log(`[PYTHON DEBUG] stdout:`, data.toString());
       stdoutData += data.toString();
     });
+    
     python.stderr.on('data', (data) => {
       console.log(`[PYTHON DEBUG] stderr:`, data.toString());
       stderrData += data.toString();
+      logger.error(`Python execution error [${executionId}]: ${data.toString()}`);
     });
+    
     python.on('close', async (code) => {
       console.log(`[PYTHON DEBUG] Process exited with code: ${code}`);
       // Clean up the temporary file
       await fs.unlink(tempFilePath).catch(console.error);
+      
       if (code !== 0) {
         console.log(`[PYTHON DEBUG] Non-zero exit code. stderr:`, stderrData);
         return res.status(500).json({
@@ -149,6 +137,7 @@ except Exception as e:
           error: stderrData || 'Python process exited with non-zero code'
         });
       }
+      
       try {
         console.log(`[PYTHON DEBUG] Raw stdoutData:`, stdoutData);
         // Try to parse the stdout as JSON (our wrapper should produce JSON)
@@ -164,18 +153,19 @@ except Exception as e:
           stderr: stderrData
         });
       }
+      
       // Clean up the output directory asynchronously
       setTimeout(async () => {
         try {
           await fs.rm(outputDir, { recursive: true, force: true });
         } catch (error) {
-          console.error(`Failed to clean up output directory: ${error.message}`);
+          logger.error(`Failed to clean up output directory: ${error.message}`);
         }
       }, 30000); // Clean up after 30 seconds
     });
     
   } catch (error) {
-    console.error(`Python execution failed: ${error.message}`);
+    logger.error(`Python execution failed: ${error.message}`);
     res.status(500).json({
       success: false,
       error: error.message
@@ -183,4 +173,8 @@ except Exception as e:
   }
 });
 
-module.exports = router;
+const PORT = 3081;
+app.listen(PORT, () => {
+  console.log(`Test Python server running on http://localhost:${PORT}`);
+  console.log(`Test with: curl -X POST http://localhost:${PORT}/api/python/execute -H "Content-Type: application/json" -d '{"code":"print(\\"Hello World\\")"}'`);
+});

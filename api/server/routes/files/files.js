@@ -173,12 +173,11 @@ router.get('/code/download/:session_id/:fileId', async (req, res) => {
       return res.status(501).send('Not Implemented');
     }
 
-    const result = await loadAuthValues({ userId: req.user.id, authFields: [EnvVar.CODE_API_KEY] });
-
+    // Our custom code execution doesn't require API key authentication
     /** @type {AxiosResponse<ReadableStream> | undefined} */
     const response = await getDownloadStream(
       `${session_id}/${fileId}`,
-      result[EnvVar.CODE_API_KEY],
+      'custom-local-execution',
     );
     res.set(response.headers);
     response.data.pipe(res);

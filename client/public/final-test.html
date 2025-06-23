@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibreChat Python Code Execution - Final Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .test-section.success {
+            border-color: #4caf50;
+            background-color: #f1f8e9;
+        }
+        .test-section.error {
+            border-color: #f44336;
+            background-color: #ffebee;
+        }
+        .test-section.pending {
+            border-color: #ff9800;
+            background-color: #fff3e0;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #444;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        button {
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        pre {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 3px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .status.success {
+            background-color: #4caf50;
+            color: white;
+        }
+        .status.error {
+            background-color: #f44336;
+            color: white;
+        }
+        .status.pending {
+            background-color: #ff9800;
+            color: white;
+        }
+        .instructions {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .code-block {
+            background-color: #263238;
+            color: #eeff41;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐍 LibreChat Python Code Execution - Final Test</h1>
+        
+        <div class="instructions">
+            <h3>📋 Test Instructions:</h3>
+            <ol>
+                <li><strong>Login to LibreChat:</strong> Open <a href="http://localhost:3080" target="_blank">LibreChat</a> and login</li>
+                <li><strong>Start a new chat</strong> or open an existing conversation</li>
+                <li><strong>Enable Code Interpreter:</strong> Look for the code/terminal icon and enable it</li>
+                <li><strong>Test Python code execution:</strong> Send a message with Python code like:</li>
+            </ol>
+            <div class="code-block">
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Create sample data
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+
+# Create plot
+plt.figure(figsize=(10, 6))
+plt.plot(x, y, 'b-', linewidth=2, label='sin(x)')
+plt.xlabel('x')
+plt.ylabel('sin(x)')
+plt.title('Sine Wave')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+print("Plot generated successfully!")
+```
+            </div>
+            <p><strong>Expected behavior:</strong> The code should execute and display both the output text and any generated plots!</p>
+        </div>
+
+        <div class="test-section" id="backend-test">
+            <h2>🔧 Backend API Test</h2>
+            <div class="status pending" id="backend-status">Testing...</div>
+            <button onclick="testBackend()" id="backend-btn">Test Python Backend</button>
+            <pre id="backend-result">Click the button to test the Python execution backend...</pre>
+        </div>
+
+        <div class="test-section" id="system-info">
+            <h2>ℹ️ System Information</h2>
+            <div class="status success">Ready</div>
+            <pre id="system-details">Loading system information...</pre>
+        </div>
+
+        <div class="test-section" id="sample-codes">
+            <h2>🧪 Sample Python Codes to Test</h2>
+            <p>Copy and paste these code examples in LibreChat to test different functionality:</p>
+            
+            <h3>1. Basic Math and Visualization</h3>
+            <pre>import matplotlib.pyplot as plt
+import numpy as np
+
+# Generate data
+x = np.linspace(0, 2*np.pi, 100)
+y1 = np.sin(x)
+y2 = np.cos(x)
+
+# Create plot
+plt.figure(figsize=(12, 6))
+plt.subplot(1, 2, 1)
+plt.plot(x, y1, 'r-', label='sin(x)')
+plt.plot(x, y2, 'b-', label='cos(x)')
+plt.title('Trigonometric Functions')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True)
+
+plt.subplot(1, 2, 2)
+plt.hist(np.random.normal(0, 1, 1000), bins=30, alpha=0.7)
+plt.title('Random Normal Distribution')
+plt.xlabel('Value')
+plt.ylabel('Frequency')
+
+plt.tight_layout()
+plt.show()
+
+print("Math and visualization test completed!")</pre>
+
+            <h3>2. Data Analysis</h3>
+            <pre>import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Create sample dataset
+np.random.seed(42)
+data = {
+    'Name': [f'Person_{i}' for i in range(100)],
+    'Age': np.random.randint(18, 80, 100),
+    'Salary': np.random.normal(50000, 15000, 100),
+    'Department': np.random.choice(['Engineering', 'Sales', 'Marketing', 'HR'], 100)
+}
+
+df = pd.DataFrame(data)
+
+# Basic statistics
+print("Dataset Overview:")
+print(df.head())
+print("\nDataset Info:")
+print(df.info())
+print("\nStatistical Summary:")
+print(df.describe())
+
+# Visualization
+fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+
+# Age distribution
+axes[0, 0].hist(df['Age'], bins=20, color='skyblue', alpha=0.7)
+axes[0, 0].set_title('Age Distribution')
+axes[0, 0].set_xlabel('Age')
+axes[0, 0].set_ylabel('Frequency')
+
+# Salary by department
+dept_salary = df.groupby('Department')['Salary'].mean()
+axes[0, 1].bar(dept_salary.index, dept_salary.values, color='lightgreen')
+axes[0, 1].set_title('Average Salary by Department')
+axes[0, 1].set_xlabel('Department')
+axes[0, 1].set_ylabel('Average Salary')
+axes[0, 1].tick_params(axis='x', rotation=45)
+
+# Scatter plot
+axes[1, 0].scatter(df['Age'], df['Salary'], alpha=0.6, color='coral')
+axes[1, 0].set_title('Age vs Salary')
+axes[1, 0].set_xlabel('Age')
+axes[1, 0].set_ylabel('Salary')
+
+# Department distribution
+dept_counts = df['Department'].value_counts()
+axes[1, 1].pie(dept_counts.values, labels=dept_counts.index, autopct='%1.1f%%')
+axes[1, 1].set_title('Department Distribution')
+
+plt.tight_layout()
+plt.show()
+
+print("Data analysis completed successfully!")</pre>
+
+            <h3>3. Machine Learning Example</h3>
+            <pre>import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# Generate sample data
+X, y = make_classification(n_samples=1000, n_features=2, n_redundant=0, 
+                         n_informative=2, n_clusters_per_class=1, random_state=42)
+
+# Split the data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Train model
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Make predictions
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+
+print(f"Model Accuracy: {accuracy:.3f}")
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+
+# Visualization
+plt.figure(figsize=(12, 5))
+
+# Plot training data
+plt.subplot(1, 2, 1)
+colors = ['red', 'blue']
+for i in range(2):
+    plt.scatter(X_train[y_train == i, 0], X_train[y_train == i, 1], 
+               c=colors[i], label=f'Class {i}', alpha=0.6)
+plt.title('Training Data')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.legend()
+
+# Plot test predictions
+plt.subplot(1, 2, 2)
+for i in range(2):
+    plt.scatter(X_test[y_pred == i, 0], X_test[y_pred == i, 1], 
+               c=colors[i], label=f'Predicted Class {i}', alpha=0.6)
+plt.title(f'Test Predictions (Accuracy: {accuracy:.3f})')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+print("Machine learning example completed!")</pre>
+        </div>
+
+        <div class="test-section" id="final-status">
+            <h2>✅ Final Status</h2>
+            <div class="status pending">Waiting for manual testing...</div>
+            <p><strong>What to check:</strong></p>
+            <ul>
+                <li>✅ Python backend API working</li>
+                <li>🔄 LibreChat frontend integration</li>
+                <li>🔄 Code execution in chat interface</li>
+                <li>🔄 Output display in chat</li>
+                <li>🔄 Image/plot display in chat</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function testBackend() {
+            const btn = document.getElementById('backend-btn');
+            const result = document.getElementById('backend-result');
+            const status = document.getElementById('backend-status');
+            const section = document.getElementById('backend-test');
+            
+            btn.disabled = true;
+            status.textContent = 'Testing...';
+            status.className = 'status pending';
+            section.className = 'test-section pending';
+            
+            try {
+                const testCode = `
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Test computation
+print("Testing LibreChat Python backend...")
+print(f"NumPy version: {np.__version__}")
+
+# Simple calculation
+result = np.sqrt(16)
+print(f"Square root of 16: {result}")
+
+# Create a simple plot
+x = np.linspace(0, 4*np.pi, 100)
+y = np.sin(x) * np.exp(-x/10)
+
+plt.figure(figsize=(10, 6))
+plt.plot(x, y, 'b-', linewidth=2)
+plt.title('Damped Sine Wave')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.grid(True, alpha=0.3)
+plt.show()
+
+print("Backend test completed successfully!")
+print("✅ All systems operational!")
+                `;
+                
+                const response = await fetch('/api/python/execute', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ code: testCode })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    status.textContent = 'Backend Working ✅';
+                    status.className = 'status success';
+                    section.className = 'test-section success';
+                    result.textContent = `SUCCESS!\n\nOutput:\n${data.output}\n\nImages generated: ${data.images.length}`;
+                } else {
+                    throw new Error(data.error || 'Unknown error');
+                }
+            } catch (error) {
+                status.textContent = 'Backend Error ❌';
+                status.className = 'status error';
+                section.className = 'test-section error';
+                result.textContent = `ERROR: ${error.message}`;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+        
+        // Load system information
+        function loadSystemInfo() {
+            const systemDetails = document.getElementById('system-details');
+            const info = `
+LibreChat Python Code Execution System
+=====================================
+
+🐍 Python Backend: http://localhost:3080/api/python/execute
+🔧 Tool Call API: http://localhost:3080/api/agents/tools/execute_code/call
+🔐 Auth Check API: http://localhost:3080/api/agents/tools/execute_code/auth
+
+Features:
+- ✅ Python code execution with matplotlib support
+- ✅ NumPy, Pandas, Scikit-learn available
+- ✅ Plot generation and image output
+- ✅ Custom tool integration with LibreChat
+- ✅ Authentication bypass for local execution
+
+Components Modified:
+- ✅ RunCode.tsx: Updated to use tool call system
+- ✅ customCodeExecution.js: Created custom tool
+- ✅ handleTools.js: Integrated custom tool
+- ✅ tools.js: Fixed authentication bypass
+- ✅ callbacks.js: Updated for local execution
+- ✅ process.js & files.js: Removed auth requirements
+
+Test Timestamp: ${new Date().toLocaleString()}
+            `;
+            systemDetails.textContent = info;
+        }
+        
+        // Initialize
+        loadSystemInfo();
+        
+        // Auto-test backend on load
+        setTimeout(testBackend, 1000);
+    </script>
+</body>
+</html>

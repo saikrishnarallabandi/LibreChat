@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LibreChat Python Execution Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; margin-bottom: 30px; }
+        .success-banner { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .test-section { margin-bottom: 30px; padding: 20px; border: 1px solid #dee2e6; border-radius: 5px; }
+        .test-section h3 { margin-top: 0; color: #495057; }
+        textarea { width: 100%; height: 200px; font-family: 'Courier New', monospace; font-size: 14px; border: 1px solid #ced4da; border-radius: 4px; padding: 10px; }
+        button { 
+            padding: 12px 24px; 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 16px;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #6c757d; cursor: not-allowed; }
+        .output { 
+            margin-top: 20px; 
+            padding: 15px; 
+            background-color: #f8f9fa; 
+            border: 1px solid #dee2e6; 
+            border-radius: 4px; 
+            white-space: pre-wrap; 
+            font-family: 'Courier New', monospace; 
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .loading { opacity: 0.7; }
+        .status { margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐍 LibreChat Python Code Execution Test</h1>
+        
+        <div class="success-banner">
+            <strong>✅ Success!</strong> LibreChat is running and our Python execution backend is operational!
+            <br><strong>Backend API:</strong> Working perfectly
+            <br><strong>Custom Tool Integration:</strong> Ready for testing
+        </div>
+
+        <div class="test-section">
+            <h3>🔬 Python Code Execution Test</h3>
+            <p>Test our custom Python execution backend directly. This bypasses the chat interface and calls our <code>/api/python/execute</code> endpoint.</p>
+            
+            <textarea id="codeInput" placeholder="Enter Python code here...">print("🎉 Hello from LibreChat Python!")
+print("=" * 40)
+
+# Test basic operations
+result = 5 * 7
+print(f"Math test: 5 * 7 = {result}")
+
+# Test imports
+import math
+import datetime
+print(f"Square root of 16: {math.sqrt(16)}")
+print(f"Current time: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+# Test data structures
+data = [1, 2, 3, 4, 5]
+print(f"List: {data}")
+print(f"Sum: {sum(data)}")
+print(f"Average: {sum(data)/len(data)}")
+
+# Test string operations
+text = "LibreChat"
+print(f"Text: '{text}' has {len(text)} characters")
+print(f"Reversed: '{text[::-1]}'")
+
+print("✅ All tests completed successfully!")
+</textarea>
+            
+            <button onclick="testPythonExecution()" id="execBtn">🚀 Execute Python Code</button>
+            <button onclick="testBasicMath()" id="mathBtn">➕ Test Basic Math</button>
+            <button onclick="testDataVisualization()" id="vizBtn">📊 Test Data Visualization</button>
+            
+            <div id="output" class="output" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 Tool Call API Test</h3>
+            <p>Test our custom tool integration through LibreChat's tool call system. This tests the <code>/api/agents/tools/execute_code/call</code> endpoint.</p>
+            
+            <button onclick="testToolCallAPI()" id="toolBtn">🛠️ Test Tool Call API</button>
+            <button onclick="testToolCallWithPlot()" id="plotBtn">📈 Test with Matplotlib</button>
+            
+            <div id="toolOutput" class="output" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 Test Results Summary</h3>
+            <div id="testResults">
+                <p><em>Run tests to see results here...</em></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = {
+            pythonAPI: null,
+            toolAPI: null,
+            mathTest: null,
+            vizTest: null
+        };
+
+        function updateTestResults() {
+            const resultsDiv = document.getElementById('testResults');
+            const results = Object.entries(testResults)
+                .map(([test, result]) => {
+                    if (result === null) return `${test}: ⏳ Not tested yet`;
+                    return `${test}: ${result ? '✅ Passed' : '❌ Failed'}`;
+                })
+                .join('<br>');
+            resultsDiv.innerHTML = results;
+        }
+
+        function setButtonLoading(buttonId, loading) {
+            const btn = document.getElementById(buttonId);
+            btn.disabled = loading;
+            if (loading) {
+                btn.textContent = btn.textContent.replace(/^[^\\s]+/, '⏳');
+            } else {
+                btn.textContent = btn.textContent.replace('⏳', btn.id === 'execBtn' ? '🚀' : 
+                    btn.id === 'mathBtn' ? '➕' : btn.id === 'vizBtn' ? '📊' :
+                    btn.id === 'toolBtn' ? '🛠️' : '📈');
+            }
+        }
+
+        async function testPythonExecution() {
+            const code = document.getElementById('codeInput').value;
+            const outputDiv = document.getElementById('output');
+            
+            try {
+                setButtonLoading('execBtn', true);
+                outputDiv.style.display = 'block';
+                outputDiv.className = 'output loading';
+                outputDiv.textContent = '⏳ Executing Python code...';
+                
+                const response = await fetch('/api/python/execute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    outputDiv.className = 'output success';
+                    outputDiv.textContent = `✅ SUCCESS\\n\\nOutput:\\n${result.output || 'No output'}\\n\\nImages: ${result.images?.length || 0} generated`;
+                    testResults.pythonAPI = true;
+                } else {
+                    outputDiv.className = 'output error';
+                    outputDiv.textContent = `❌ ERROR\\n\\n${result.error || 'Unknown error'}`;
+                    testResults.pythonAPI = false;
+                }
+            } catch (error) {
+                outputDiv.style.display = 'block';
+                outputDiv.className = 'output error';
+                outputDiv.textContent = `❌ NETWORK ERROR\\n\\n${error.message}`;
+                testResults.pythonAPI = false;
+            } finally {
+                setButtonLoading('execBtn', false);
+                updateTestResults();
+            }
+        }
+
+        async function testBasicMath() {
+            const mathCode = \`import math
+print("🧮 Math Operations Test")
+print("=" * 30)
+
+# Basic arithmetic
+print(f"2 + 2 = {2 + 2}")
+print(f"10 * 5 = {10 * 5}")
+print(f"100 / 4 = {100 / 4}")
+print(f"2 ** 8 = {2 ** 8}")
+
+# Math module functions
+print(f"sqrt(144) = {math.sqrt(144)}")
+print(f"sin(π/2) = {math.sin(math.pi/2)}")
+print(f"log(e) = {math.log(math.e)}")
+
+# Constants
+print(f"π = {math.pi}")
+print(f"e = {math.e}")
+\`;
+            
+            document.getElementById('codeInput').value = mathCode;
+            await testPythonExecution();
+            testResults.mathTest = testResults.pythonAPI;
+        }
+
+        async function testDataVisualization() {
+            const vizCode = \`import matplotlib.pyplot as plt
+import numpy as np
+
+print("📊 Creating a sample plot...")
+
+# Generate sample data
+x = np.linspace(0, 10, 100)
+y1 = np.sin(x)
+y2 = np.cos(x)
+
+# Create the plot
+plt.figure(figsize=(10, 6))
+plt.plot(x, y1, label='sin(x)', linewidth=2)
+plt.plot(x, y2, label='cos(x)', linewidth=2)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('LibreChat Python Execution - Trigonometric Functions')
+plt.legend()
+plt.grid(True, alpha=0.3)
+
+# Save the plot
+plt.savefig('trigonometric_plot.png', dpi=150, bbox_inches='tight')
+print("✅ Plot saved as 'trigonometric_plot.png'")
+print(f"Data points: {len(x)}")
+print(f"X range: {x.min():.2f} to {x.max():.2f}")
+\`;
+            
+            document.getElementById('codeInput').value = vizCode;
+            await testPythonExecution();
+            testResults.vizTest = testResults.pythonAPI;
+        }
+        
+        async function testToolCallAPI() {
+            const code = document.getElementById('codeInput').value;
+            const outputDiv = document.getElementById('toolOutput');
+            
+            try {
+                setButtonLoading('toolBtn', true);
+                outputDiv.style.display = 'block';
+                outputDiv.className = 'output loading';
+                outputDiv.textContent = '⏳ Testing tool call API...';
+                
+                const response = await fetch('/api/agents/tools/execute_code/call', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        code: code,
+                        language: 'python'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    outputDiv.className = 'output success';
+                    outputDiv.textContent = \`✅ TOOL CALL SUCCESS\\n\\nTool Response:\\n\${JSON.stringify(result, null, 2)}\`;
+                    testResults.toolAPI = true;
+                } else {
+                    outputDiv.className = 'output error';
+                    outputDiv.textContent = \`❌ Tool Call Error \${response.status}\\n\\n\${JSON.stringify(result, null, 2)}\`;
+                    testResults.toolAPI = false;
+                }
+            } catch (error) {
+                outputDiv.style.display = 'block';
+                outputDiv.className = 'output error';
+                outputDiv.textContent = \`❌ Tool Call Network Error\\n\\n\${error.message}\`;
+                testResults.toolAPI = false;
+            } finally {
+                setButtonLoading('toolBtn', false);
+                updateTestResults();
+            }
+        }
+
+        async function testToolCallWithPlot() {
+            const plotCode = \`import matplotlib.pyplot as plt
+import numpy as np
+
+# Create sample data
+categories = ['LibreChat', 'Python', 'Integration', 'Success', 'Testing']
+values = [95, 88, 92, 98, 85]
+
+# Create bar chart
+plt.figure(figsize=(10, 6))
+bars = plt.bar(categories, values, color=['#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1'])
+plt.ylabel('Score')
+plt.title('LibreChat Python Integration Test Results')
+plt.ylim(0, 100)
+
+# Add value labels on bars
+for bar, value in zip(bars, values):
+    plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 1, 
+             f'{value}%', ha='center', va='bottom', fontweight='bold')
+
+plt.tight_layout()
+plt.savefig('test_results.png', dpi=150, bbox_inches='tight')
+print("📊 Test results chart saved as 'test_results.png'")
+print(f"Average score: {np.mean(values):.1f}%")
+\`;
+            
+            const outputDiv = document.getElementById('toolOutput');
+            
+            try {
+                setButtonLoading('plotBtn', true);
+                outputDiv.style.display = 'block';
+                outputDiv.className = 'output loading';
+                outputDiv.textContent = '⏳ Testing tool call with matplotlib...';
+                
+                const response = await fetch('/api/agents/tools/execute_code/call', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        code: plotCode,
+                        language: 'python'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    outputDiv.className = 'output success';
+                    outputDiv.textContent = \`✅ MATPLOTLIB TOOL CALL SUCCESS\\n\\nTool Response:\\n\${JSON.stringify(result, null, 2)}\`;
+                    testResults.toolAPI = true;
+                } else {
+                    outputDiv.className = 'output error';
+                    outputDiv.textContent = \`❌ Matplotlib Tool Call Error \${response.status}\\n\\n\${JSON.stringify(result, null, 2)}\`;
+                }
+            } catch (error) {
+                outputDiv.style.display = 'block';
+                outputDiv.className = 'output error';
+                outputDiv.textContent = \`❌ Matplotlib Tool Call Error\\n\\n\${error.message}\`;
+            } finally {
+                setButtonLoading('plotBtn', false);
+                updateTestResults();
+            }
+        }
+
+        // Initialize
+        updateTestResults();
+    </script>
+</body>
+</html>

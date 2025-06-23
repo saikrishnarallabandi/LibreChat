@@ -321,15 +321,12 @@ function createToolEndCallback({ req, res, artifactPromises }) {
       const { id, name } = file;
       artifactPromises.push(
         (async () => {
-          const result = await loadAuthValues({
-            userId: req.user.id,
-            authFields: [EnvVar.CODE_API_KEY],
-          });
+          // Our custom code execution doesn't require API key authentication
           const fileMetadata = await processCodeOutput({
             req,
             id,
             name,
-            apiKey: result[EnvVar.CODE_API_KEY],
+            apiKey: 'custom-local-execution',
             messageId: metadata.run_id,
             toolCallId: output.tool_call_id,
             conversationId: metadata.thread_id,

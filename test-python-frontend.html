@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Execution Test</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Python Execution Test</h1>
+    
+    <div>
+        <h3>Test Python Code:</h3>
+        <textarea id="codeInput" rows="5" cols="60">print("Hello World from HTML test!")
+print("This is working!")
+x = 2 + 3
+print(f"2 + 3 = {x}")</textarea>
+        <br><br>
+        <button onclick="executeCode()">Run Python Code (server)</button>
+        <span id="loading" style="display: none;">Executing...</span>
+    </div>
+    
+    <div id="output" style="margin-top: 20px; padding: 10px; background: #f0f0f0; font-family: monospace; white-space: pre-wrap; min-height: 100px;">
+        Output will appear here...
+    </div>
+    
+    <div id="error" style="margin-top: 20px; padding: 10px; background: #ffebee; color: red; font-family: monospace; white-space: pre-wrap; display: none;">
+    </div>
+
+    <script>
+        // Recreate the executePythonOnServer function
+        async function executePythonOnServer(code) {
+            console.log('[pythonExecution] Starting executePythonOnServer with code:', code);
+            
+            if (!code || code.trim() === '') {
+                throw new Error('No code provided');
+            }
+
+            try {
+                console.log('[pythonExecution] Making POST to http://localhost:3081/api/python/execute');
+                
+                const response = await axios.post('http://localhost:3081/api/python/execute', { code });
+                console.log('[pythonExecution] Got response:', response);
+                
+                return response.data;
+            } catch (error) {
+                console.error('Error executing Python code on server:', error);
+                
+                // Handle different error types
+                if (error.response?.data) {
+                    throw new Error(error.response.data.error || 'Failed to execute code on server');
+                } else if (error.message) {
+                    throw new Error(`Server error: ${error.message}`);
+                } else {
+                    throw new Error('Unknown server error');
+                }
+            }
+        }
+
+        async function executeCode() {
+            console.log('[Test] Execute button clicked!');
+            
+            const codeInput = document.getElementById('codeInput');
+            const outputDiv = document.getElementById('output');
+            const errorDiv = document.getElementById('error');
+            const loadingSpan = document.getElementById('loading');
+            
+            const code = codeInput.value;
+            console.log('[Test] Code to execute:', code);
+            
+            if (!code.trim()) {
+                alert('Please enter some Python code');
+                return;
+            }
+            
+            // Show loading
+            loadingSpan.style.display = 'inline';
+            errorDiv.style.display = 'none';
+            outputDiv.textContent = 'Executing...';
+            
+            try {
+                console.log('[Test] About to call executePythonOnServer...');
+                const result = await executePythonOnServer(code);
+                console.log('[Test] Got result:', result);
+                
+                // Display output
+                outputDiv.textContent = result.output || 'Code executed successfully (no output).';
+                
+                // Show success message
+                alert('Code executed successfully!');
+                
+            } catch (error) {
+                console.error('[Test] Error:', error);
+                
+                errorDiv.textContent = error.message || 'An error occurred while running the code';
+                errorDiv.style.display = 'block';
+                outputDiv.textContent = 'Error occurred (see red box below)';
+                
+                alert('Error: ' + error.message);
+                
+            } finally {
+                loadingSpan.style.display = 'none';
+            }
+        }
+
+        console.log('[Test] HTML page loaded, ready to test Python execution');
+    </script>
+</body>
+</html>

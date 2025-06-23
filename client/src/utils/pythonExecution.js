@@ -5,15 +5,28 @@ import { createBackendRequest } from '~/utils/createBackendRequest';
  * @param {string} code The Python code to execute
  */
 export const executePythonOnServer = async (code) => {
+  console.log('[pythonExecution] Starting executePythonOnServer with code:', code);
+  
   if (!code || code.trim() === '') {
     throw new Error('No code provided');
   }
 
   try {
-    const response = await createBackendRequest().post('/api/python/execute', { code });
+    console.log('[pythonExecution] Creating backend request...');
+    const backendRequest = createBackendRequest();
+    console.log('[pythonExecution] Backend request created:', backendRequest.defaults);
+    console.log('[pythonExecution] Making POST to /api/python/execute');
+    
+    const response = await backendRequest.post('/api/python/execute', { code });
+    console.log('[pythonExecution] Got response status:', response.status);
+    console.log('[pythonExecution] Got response data:', response.data);
+    
     return response.data;
   } catch (error) {
-    console.error('Error executing Python code on server:', error);
+    console.error('[pythonExecution] Error executing Python code on server:', error);
+    console.error('[pythonExecution] Error response:', error.response);
+    console.error('[pythonExecution] Error request:', error.request);
+    console.error('[pythonExecution] Error config:', error.config);
     
     // Handle different error types
     if (error.response?.data) {

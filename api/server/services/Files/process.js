@@ -501,13 +501,13 @@ const processAgentFileUpload = async ({ req, res, metadata }) => {
       throw new Error('Code execution is not enabled for Agents');
     }
     const { handleFileUpload: uploadCodeEnvFile } = getStrategyFunctions(FileSources.execute_code);
-    const result = await loadAuthValues({ userId: req.user.id, authFields: [EnvVar.CODE_API_KEY] });
+    // Our custom code execution doesn't require API key authentication
     const stream = fs.createReadStream(file.path);
     const fileIdentifier = await uploadCodeEnvFile({
       req,
       stream,
       filename: file.originalname,
-      apiKey: result[EnvVar.CODE_API_KEY],
+      apiKey: 'custom-local-execution',
       entity_id,
     });
     fileInfoMetadata = { fileIdentifier };

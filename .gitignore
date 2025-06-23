@@ -125,3 +125,5 @@ helm/**/.values.yaml
 
 # SAML Idp cert
 *.cert
+
+data-node.backup/
