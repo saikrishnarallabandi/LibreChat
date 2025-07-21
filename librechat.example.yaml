@@ -129,32 +129,52 @@ actions:
     - "google.com"
 
 # Example MCP Servers Object Structure
-# mcpServers:
-#   everything:
-#     # type: sse # type can optionally be omitted
-#     url: http://localhost:3001/sse
-#     timeout: 60000  # 1 minute timeout for this server, this is the default timeout for MCP servers.
-#   puppeteer:
-#     type: stdio
-#     command: npx
-#     args:
-#       - -y
-#       - "@modelcontextprotocol/server-puppeteer"
-#     timeout: 300000  # 5 minutes timeout for this server
-#   filesystem:
-#     # type: stdio
-#     command: npx
-#     args:
-#       - -y
-#       - "@modelcontextprotocol/server-filesystem"
-#       - /home/user/LibreChat/
-#     iconPath: /home/user/LibreChat/client/public/assets/logo.svg
-#   mcp-obsidian:
-#     command: npx
-#     args:
-#       - -y
-#       - "mcp-obsidian"
-#       - /path/to/obsidian/vault
+mcpServers:
+  # MCP Atlassian Proxy for multi-user support
+  atlassian:
+    type: sse
+    url: http://mcp_proxy:8080/mcp
+    timeout: 60000
+    headers:
+      # These headers will be dynamically populated by LibreChat
+      # with user-specific credentials via customUserVars
+      X-User-ID: "{{LIBRECHAT_USER_ID}}"
+      X-Jira-PAT: "{{JIRA_PAT}}"
+      X-Confluence-PAT: "{{CONFLUENCE_PAT}}"
+    customUserVars:
+      JIRA_PAT:
+        title: "Jira Personal Access Token"
+        description: "Your Jira PAT for accessing Jira APIs"
+      CONFLUENCE_PAT:
+        title: "Confluence Personal Access Token"
+        description: "Your Confluence PAT for accessing Confluence APIs"
+    iconPath: /atlassian-icon.svg
+    serverInstructions: true
+  # everything:
+  #   # type: sse # type can optionally be omitted
+  #   url: http://localhost:3001/sse
+  #   timeout: 60000  # 1 minute timeout for this server, this is the default timeout for MCP servers.
+  # puppeteer:
+  #   type: stdio
+  #   command: npx
+  #   args:
+  #     - -y
+  #     - "@modelcontextprotocol/server-puppeteer"
+  #   timeout: 300000  # 5 minutes timeout for this server
+  # filesystem:
+  #   # type: stdio
+  #   command: npx
+  #   args:
+  #     - -y
+  #     - "@modelcontextprotocol/server-filesystem"
+  #     - /home/user/LibreChat/
+  #   iconPath: /home/user/LibreChat/client/public/assets/logo.svg
+  # mcp-obsidian:
+  #   command: npx
+  #   args:
+  #     - -y
+  #     - "mcp-obsidian"
+  #     - /path/to/obsidian/vault
 
 # Definition of custom endpoints
 endpoints:

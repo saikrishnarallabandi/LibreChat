@@ -70,6 +70,21 @@ services:
       - vectordb
     env_file:
       - .env
+  mcp_proxy:
+    container_name: mcp_proxy
+    build:
+      context: .
+      dockerfile: Dockerfile.proxy
+    ports:
+      - "${MCP_PROXY_PORT:-8080}:8080"
+    restart: always
+    environment:
+      - LOG_LEVEL=info
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   pgdata2:
