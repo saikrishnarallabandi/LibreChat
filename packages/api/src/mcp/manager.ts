@@ -447,6 +447,35 @@ export class MCPManager {
     if (this.processMCPEnv) {
       config = { ...(this.processMCPEnv(config, user, customUserVars) ?? {}) };
     }
+
+    // Inject customUserVars as HTTP headers for MCP proxy integration
+    if (customUserVars && (config.type === 'sse' || config.type === 'streamable-http' || !config.type)) {
+      const headers = { ...config.headers };
+      
+      // Map common Atlassian variables to expected headers
+      if (customUserVars.jira_pat) {
+        headers['X-Jira-PAT'] = customUserVars.jira_pat;
+      }
+      if (customUserVars.confluence_pat) {
+        headers['X-Confluence-PAT'] = customUserVars.confluence_pat;
+      }
+      if (customUserVars.atlassian_url) {
+        headers['X-Atlassian-URL'] = customUserVars.atlassian_url;
+      }
+      
+      // Add user ID for logging/tracking
+      if (userId) {
+        headers['X-User-ID'] = userId;
+      }
+      
+      // Generic approach: prefix all customUserVars with X-Custom-
+      Object.entries(customUserVars).forEach(([key, value]) => {
+        const headerKey = `X-Custom-${key.replace(/_/g, '-')}`;
+        headers[headerKey] = value;
+      });
+      
+      config = { ...config, headers };
+    }
     /** If no in-memory tokens, tokens from persistent storage */
     let tokens: MCPOAuthTokens | null = null;
     if (tokenMethods?.findToken) {
