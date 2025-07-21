@@ -155,6 +155,49 @@ Click on the thumbnail to open the video☝️
 
 ---
 
+## 🔧 MCP Atlassian Integration
+
+LibreChat now includes an MCP Atlassian proxy for multi-user Atlassian integration. This allows each user to securely use their own Personal Access Tokens (PATs) for Jira and Confluence Data Center.
+
+### Features
+- **Multi-user PAT support**: Each user provides their own Jira and Confluence PATs
+- **Universal routing**: Single endpoint handles all mcp-atlassian tools
+- **Secure token injection**: PATs are injected at runtime via HTTP headers
+- **Docker containerized**: Easy deployment alongside LibreChat
+
+### Quick Setup
+
+1. **Start the proxy service:**
+   ```bash
+   cd mcp-atlassian-proxy
+   ./start.sh
+   ```
+
+2. **Configure LibreChat** by adding to your `librechat.yaml`:
+   ```yaml
+   mcpServers:
+     atlassian:
+       type: sse
+       url: http://mcp-atlassian-proxy:3001/mcp
+       timeout: 60000
+       customUserVars:
+         jira_pat:
+           title: "Jira Personal Access Token"
+           description: "Your Jira PAT for accessing Jira Data Center"
+         confluence_pat:
+           title: "Confluence Personal Access Token"
+           description: "Your Confluence PAT for accessing Confluence Data Center"
+         atlassian_url:
+           title: "Atlassian URL"
+           description: "Your Atlassian Data Center URL"
+   ```
+
+3. **Users configure their credentials** in LibreChat Settings → Tools
+
+For detailed setup instructions, see [`mcp-atlassian-proxy/README.md`](./mcp-atlassian-proxy/README.md).
+
+---
+
 ## 📝 Changelog
 
 Keep up with the latest updates by visiting the releases page and notes:

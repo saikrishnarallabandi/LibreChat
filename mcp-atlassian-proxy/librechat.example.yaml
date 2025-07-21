@@ -1,0 +1,54 @@
+# Example LibreChat configuration for MCP Atlassian proxy integration
+
+version: 1.2.1
+cache: true
+
+# Example MCP Servers configuration with Atlassian proxy
+mcpServers:
+  # Atlassian integration via universal proxy
+  atlassian:
+    type: sse
+    url: http://mcp-atlassian-proxy:3001/mcp
+    timeout: 60000  # 1 minute timeout
+    # User-specific variables that will be passed as HTTP headers
+    customUserVars:
+      jira_pat:
+        title: "Jira Personal Access Token"
+        description: "Your Personal Access Token for Jira Data Center. Get this from your Jira profile settings."
+      confluence_pat:
+        title: "Confluence Personal Access Token"
+        description: "Your Personal Access Token for Confluence Data Center. Get this from your Confluence profile settings."
+      atlassian_url:
+        title: "Atlassian Data Center URL"
+        description: "Your Atlassian Data Center base URL (e.g., https://company.atlassian.net)"
+    # Optional: Server instructions to include in AI context
+    serverInstructions: |
+      You have access to Atlassian tools for Jira and Confluence via the atlassian MCP server.
+      Use these tools to:
+      - Search and retrieve Jira issues
+      - Create and update Jira issues
+      - Search Confluence pages and spaces
+      - Create and edit Confluence content
+      
+      When working with Jira:
+      - Use JQL (Jira Query Language) for complex searches
+      - Always specify project keys when creating issues
+      - Include appropriate issue types and priorities
+      
+      When working with Confluence:
+      - Use space keys to organize content
+      - Format content using Confluence markup
+      - Link related pages and Jira issues when appropriate
+
+# Additional example configurations for other services
+endpoints:
+  custom:
+    # Example: OpenAI endpoint that could work with MCP tools
+    - name: 'openai'
+      apiKey: '${OPENAI_API_KEY}'
+      baseURL: 'https://api.openai.com/v1'
+      models:
+        default: ['gpt-4', 'gpt-3.5-turbo']
+      titleConvo: true
+      titleModel: 'gpt-3.5-turbo'
+      modelDisplayLabel: 'OpenAI'
