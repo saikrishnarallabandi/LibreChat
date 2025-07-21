@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  mcp-atlassian-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mcp-atlassian-proxy
+    ports:
+      - "${MCP_PROXY_PORT:-8001}:8001"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8001
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - librechat-network
+
+networks:
+  librechat-network:
+    external: true

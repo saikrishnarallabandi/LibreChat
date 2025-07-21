@@ -155,6 +155,28 @@ actions:
 #       - -y
 #       - "mcp-obsidian"
 #       - /path/to/obsidian/vault
+#   # Multi-user MCP Atlassian integration via FastAPI proxy
+#   atlassian:
+#     type: streamable_http
+#     url: http://mcp-atlassian-proxy:8001
+#     timeout: 30000  # 30 second timeout for Atlassian API calls
+#     headers:
+#       X-Jira-PAT: "{{jira_pat}}"
+#       X-Confluence-PAT: "{{confluence_pat}}"
+#     customUserVars:
+#       jira_pat:
+#         title: "Jira Personal Access Token"
+#         description: "Your personal access token for Jira Data Center. Get this from your Jira profile settings."
+#       confluence_pat:
+#         title: "Confluence Personal Access Token"  
+#         description: "Your personal access token for Confluence Data Center. Get this from your Confluence profile settings."
+#     serverInstructions: |
+#       Use these tools to interact with Jira and Confluence. You can:
+#       - Search and view Jira issues
+#       - Create and update Jira issues
+#       - Search and view Confluence pages
+#       - Create and update Confluence content
+#       Make sure your PATs are configured in the user settings.
 
 # Definition of custom endpoints
 endpoints:
