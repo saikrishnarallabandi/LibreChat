@@ -71,5 +71,28 @@ services:
     env_file:
       - .env
 
+  # Optional: MCP Atlassian Proxy for multi-user PAT support
+  # Uncomment to enable multi-user Atlassian integration
+  # mcp-atlassian-proxy:
+  #   build:
+  #     context: ./mcp-atlassian-proxy
+  #     dockerfile: Dockerfile
+  #   container_name: mcp-atlassian-proxy
+  #   ports:
+  #     - "${MCP_PROXY_PORT:-8001}:8001"
+  #   environment:
+  #     - HOST=0.0.0.0
+  #     - PORT=8001
+  #     - LOG_LEVEL=${LOG_LEVEL:-info}
+  #   restart: unless-stopped
+  #   networks:
+  #     - default
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 10s
+
 volumes:
   pgdata2:
