@@ -68,4 +68,9 @@ echo "   docker-compose up -d"
 echo "3. Configure your Atlassian PATs in LibreChat settings"
 echo "4. Test the integration with Jira and Confluence tools"
 echo
-echo "For detailed instructions, see docs/mcp-atlassian-integration.md"
+echo "For detailed instructions, see:"
+echo "- docs/mcp-atlassian-integration.md (comprehensive guide)"
+echo "- README_MCP_ATLASSIAN.md (quick start guide)"
+echo
+echo "To test proxy functionality:"
+echo "- ./test_functionality.py (requires: pip install fastapi uvicorn pydantic)"
